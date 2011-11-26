@@ -32,14 +32,12 @@ class WiimoteWindow(object):
         self.ui.statusbar.addPermanentWidget(self._permanentMessage)
         self.main_window.show()
 
-#    def exec_(self):
-#        self.app.exec_()
-
-    # Slot
+    # Control slot
     def _toggle_rumble(self):
         self.show_temporary_message('Toggling rumble')
+        logger.debug('Toggling rumble')
 
-    # Slot
+    # Control slot
     def _set_leds(self):
         self.show_temporary_message('Setting LEDs')
         led_map = {
@@ -71,12 +69,10 @@ def main():
     
     app = QtGui.QApplication(sys.argv)
     wiimote_window = WiimoteWindow()
-    blah = Wiimote()
 
-    # TODO: Statusbar message
+    # TODO: State statusbar messages
     wiimote_window.set_permanent_message('Disconnected from wiimote')
 
-#    sys.exit(wiimte_window.exec_())
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
