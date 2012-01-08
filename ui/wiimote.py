@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wiimote.ui'
 #
-# Created: Sun Nov 27 00:46:20 2011
+# Created: Sun Jan 08 15:09:34 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.0.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(442, 596)
+        MainWindow.resize(290, 653)
         MainWindow.setWindowTitle("Swiim")
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setEnabled(True)
@@ -21,12 +21,23 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.MinimumExpanding)
         self.verticalLayout.addItem(spacerItem)
+        self.btConnection = QtGui.QHBoxLayout()
+        self.btConnection.setObjectName("btConnection")
+        self.connect = QtGui.QPushButton(self.centralwidget)
+        self.connect.setObjectName("connect")
+        self.btConnection.addWidget(self.connect)
+        self.disconnect = QtGui.QPushButton(self.centralwidget)
+        self.disconnect.setObjectName("disconnect")
+        self.btConnection.addWidget(self.disconnect)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.btConnection.addItem(spacerItem1)
+        self.verticalLayout.addLayout(self.btConnection)
+        spacerItem2 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.MinimumExpanding)
+        self.verticalLayout.addItem(spacerItem2)
         self.wiimote = QtGui.QHBoxLayout()
         self.wiimote.setSpacing(6)
         self.wiimote.setContentsMargins(-1, -1, -1, 0)
         self.wiimote.setObjectName("wiimote")
-        spacerItem1 = QtGui.QSpacerItem(60, 20, QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
-        self.wiimote.addItem(spacerItem1)
         self.control = QtGui.QVBoxLayout()
         self.control.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
         self.control.setObjectName("control")
@@ -58,11 +69,11 @@ class Ui_MainWindow(object):
         self.controlLed4.setObjectName("controlLed4")
         self.horizontalLayout_2.addWidget(self.controlLed4)
         self.control.addLayout(self.horizontalLayout_2)
-        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.control.addItem(spacerItem2)
+        spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.control.addItem(spacerItem3)
         self.wiimote.addLayout(self.control)
-        spacerItem3 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
-        self.wiimote.addItem(spacerItem3)
+        spacerItem4 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        self.wiimote.addItem(spacerItem4)
         self.status = QtGui.QVBoxLayout()
         self.status.setObjectName("status")
         self.wiimoteImageHolder = QtGui.QWidget(self.centralwidget)
@@ -170,11 +181,9 @@ class Ui_MainWindow(object):
         self.statusBattery.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
         self.statusBattery.setObjectName("statusBattery")
         self.status.addWidget(self.statusBattery)
-        spacerItem4 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.status.addItem(spacerItem4)
+        spacerItem5 = QtGui.QSpacerItem(20, 0, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.status.addItem(spacerItem5)
         self.wiimote.addLayout(self.status)
-        spacerItem5 = QtGui.QSpacerItem(60, 20, QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
-        self.wiimote.addItem(spacerItem5)
         self.verticalLayout.addLayout(self.wiimote)
         spacerItem6 = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.MinimumExpanding)
         self.verticalLayout.addItem(spacerItem6)
@@ -188,7 +197,8 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        pass
+        self.connect.setText(QtGui.QApplication.translate("MainWindow", "Connect", None, QtGui.QApplication.UnicodeUTF8))
+        self.disconnect.setText(QtGui.QApplication.translate("MainWindow", "Disconnect", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
