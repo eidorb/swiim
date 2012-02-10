@@ -36,6 +36,12 @@ class Wiimote(object):
             dll_path = os.path.join(dll_dir, 'libwiiuse.so')
         logger.info('Using wiiuse library "%s"', dll_path)
         self.dll = ctypes.cdll.LoadLibrary(dll_path)
+        self._wiimotes = self.dll.wiiuse_init(1)
+
+    def connect(self):
+        found = self.dll.wiiuse_find(self._wiimotes, 1, 5)
+        if found:
+            return self.dll.wiiuse_connect(self._wiimotes, 1)
 
     def set_leds(self, led_state):
         self.dll.wiiuse_set_leds()
