@@ -1,7 +1,6 @@
 import logging
 from PySide import QtCore
 
-
 logger = logging.getLogger('swiim.ui.states')
 
 class WiimoteWindowState(QtCore.QState):
@@ -15,25 +14,31 @@ class DisconnectedState(WiimoteWindowState):
     def onEntry(self, *args, **kwargs):
         logger.debug('Entered disconnected state')
         self.wiimote_window.set_permanent_message('Disconnected from Wiimote')
-
-        # Wiimote connection buttons
+        # Disable disconnect button
         self.wiimote_window.ui.connect.setEnabled(True)
         self.wiimote_window.ui.disconnect.setEnabled(False)
-
-        # Wiimote control disabled while disconnected
+        # Disable Wiimote control
         self.wiimote_window.ui.wiimote.setEnabled(False)
 
 class CommunicationState(WiimoteWindowState):
     def onEntry(self, *args, **kwargs):
         logger.debug('Entered communication state')
-
-        # Wiimote connection buttons
+        # Disable connect button
         self.wiimote_window.ui.connect.setEnabled(False)
 
 class ConnectState(WiimoteWindowState):
     def onEntry(self, *args, **kwargs):
         logger.debug('Entered connect state')
         self.wiimote_window.set_permanent_message('Connecting to Wiimote')
+
+class ConnectedState(WiimoteWindowState):
+    def onEntry(self, *args, **kwargs):
+        logger.debug('Entered connected state')
+        self.wiimote_window.set_permanent_message('Connected to Wiimote')
+        # Enable disconnect button
+        self.wiimote_window.ui.disconnect.setEnabled(True)
+        # Enable Wiimote control
+        self.wiimote_window.ui.wiimote.setEnabled(True)
 
 def create_state_machine(wiimote_window):
     logger.debug('Setting up state machine')
@@ -43,6 +48,7 @@ def create_state_machine(wiimote_window):
     disconnected_state = DisconnectedState(state_machine)
     communication_state = CommunicationState(state_machine)
     connect_state = ConnectState(communication_state)
+    connected_state = ConnectedState(communication_state)
     state_machine.setInitialState(disconnected_state)
     communication_state.setInitialState(connect_state)
     # Transitions
