@@ -1,9 +1,10 @@
 import logging
 import sys
-from PySide import QtGui, QtCore
+from PySide import QtGui
 import operator
 import os
 from ui import wiimote
+from ui.states import create_state_machine
 from wiiuse import Wiimote
 
 logger = logging.getLogger('swiim')
@@ -63,12 +64,8 @@ class WiimoteWindow(object):
     def show_temporary_message(self, message):
         self.ui.statusbar.showMessage(message, 600)
 
-    class WiiuseThread(QtCore.QThread):
-        def run(self):
-            pass
-            
-
 def main():
+    # Setup logging
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
@@ -76,70 +73,15 @@ def main():
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-
-
+    # Create a Qt app and create populate the main window with a form
     app = QtGui.QApplication(sys.argv)
     wiimote_window = WiimoteWindow()
 
-#    # State machine
-#    state_machine = QtCore.QStateMachine()
-#    disconnected = QtCore.QState(state_machine)
-#    def disconnected_entered():
-#        # TODO: State statusbar messages
-#        wiimote_window.set_permanent_message('Disconnected from wiimote')
-#
-#    disconnected.entered.connect(disconnected_entered)
-#
-#    attempt_connection = QtCore.QState()
-#    connected = QtCore.QState()
-#    diagnostics = QtCore.QState()
-#
-#    state_machine.setInitialState(disconnected)
-#    state_machine.start()
-
-    state_machine = QtCore.QStateMachine()
-    disconnected_state = DisconnectedState(wiimote_window, state_machine)
-    connected_state = ConnectedState(wiimote_window, state_machine)
-
-    disconnected_state.addTransition(
-        wiimote_window.ui.connect.clicked, connected_state)
-
-    state_machine.setInitialState(disconnected_state)
+    # Create and start state machine
+    state_machine = create_state_machine(wiimote_window)
     state_machine.start()
 
-
-
     sys.exit(app.exec_())
-
-class DisconnectedState(QtCore.QState):
-    def __init__(self, wiimote_window, *args, **kwargs):
-        super(DisconnectedState, self).__init__(*args, **kwargs)
-        self.wiimote_window = wiimote_window
-
-
-    def onEntry(self, *args, **kwargs):
-        """"""
-        # Wiimote interaction disabled until connected
-        logger.debug('Entered disconnected state')
-        self.wiimote_window.set_permanent_message('Disconnected from wiimote')
-        self.wiimote_window.ui.wiimote.setEnabled(False)
-        self.wiimote_window.ui.connect.setEnabled(True)
-        self.wiimote_window.ui.disconnect.setEnabled(False)
-
-class ConnectedState(QtCore.QState):
-    def __init__(self, wiimote_window, *args, **kwargs):
-        super(ConnectedState, self).__init__(*args, **kwargs)
-        self.wiimote_window = wiimote_window
-
-    def onEntry(self, *args, **kwargs):
-        """"""
-        logger.debug('Entered connected state')
-        # Enable Wiimote interaction
-        self.wiimote_window.ui.connect.setEnabled(False)
-
-class myState(QtCore.QState):
-    def onEntry(self, *args, **kwargs):
-        print 'hi'
 
 if __name__ == '__main__':
     main()
