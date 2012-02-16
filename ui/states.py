@@ -7,9 +7,9 @@ logger = logging.getLogger('swiim.ui.states')
 class WiimoteWindowState(QtCore.QState):
     """This state contains a reference to the Wiimote window Qt object"""
 
-    def __init__(self, wiimote_window, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(WiimoteWindowState, self).__init__(*args, **kwargs)
-        self.wiimote_window = wiimote_window
+        self.wiimote_window = WiimoteWindowState.wiimote_window
 
 class DisconnectedState(WiimoteWindowState):
     def onEntry(self, *args, **kwargs):
@@ -37,11 +37,12 @@ class ConnectState(WiimoteWindowState):
 
 def create_state_machine(wiimote_window):
     logger.debug('Setting up state machine')
+    WiimoteWindowState.wiimote_window = wiimote_window
     state_machine = QtCore.QStateMachine()
     # States
-    disconnected_state = DisconnectedState(wiimote_window, state_machine)
-    communication_state = CommunicationState(wiimote_window, state_machine)
-    connect_state = ConnectState(wiimote_window, communication_state)
+    disconnected_state = DisconnectedState(state_machine)
+    communication_state = CommunicationState(state_machine)
+    connect_state = ConnectState(communication_state)
     state_machine.setInitialState(disconnected_state)
     communication_state.setInitialState(connect_state)
     # Transitions
