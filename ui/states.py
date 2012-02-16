@@ -4,12 +4,14 @@ from PySide import QtCore
 
 logger = logging.getLogger('swiim.ui.states')
 
+class WiimoteWindowState(QtCore.QState):
+    """This state contains a reference to the Wiimote window Qt object"""
 
-class DisconnectedState(QtCore.QState):
     def __init__(self, wiimote_window, *args, **kwargs):
-        super(DisconnectedState, self).__init__(*args, **kwargs)
+        super(WiimoteWindowState, self).__init__(*args, **kwargs)
         self.wiimote_window = wiimote_window
 
+class DisconnectedState(WiimoteWindowState):
     def onEntry(self, *args, **kwargs):
         logger.debug('Entered disconnected state')
         self.wiimote_window.set_permanent_message('Disconnected from Wiimote')
@@ -21,11 +23,7 @@ class DisconnectedState(QtCore.QState):
         # Wiimote control disabled while disconnected
         self.wiimote_window.ui.wiimote.setEnabled(False)
 
-class CommunicationState(QtCore.QState):
-    def __init__(self, wiimote_window, *args, **kwargs):
-        super(CommunicationState, self).__init__(*args, **kwargs)
-        self.wiimote_window = wiimote_window
-
+class CommunicationState(WiimoteWindowState):
     def onEntry(self, *args, **kwargs):
         logger.debug('Entered communication state')
 
