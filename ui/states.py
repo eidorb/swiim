@@ -30,13 +30,20 @@ class CommunicationState(WiimoteWindowState):
         # Wiimote connection buttons
         self.wiimote_window.ui.connect.setEnabled(False)
 
+class ConnectState(WiimoteWindowState):
+    def onEntry(self, *args, **kwargs):
+        logger.debug('Entered connect state')
+        self.wiimote_window.set_permanent_message('Connecting to Wiimote')
+
 def create_state_machine(wiimote_window):
     logger.debug('Setting up state machine')
     state_machine = QtCore.QStateMachine()
     # States
     disconnected_state = DisconnectedState(wiimote_window, state_machine)
     communication_state = CommunicationState(wiimote_window, state_machine)
+    connect_state = ConnectState(wiimote_window, communication_state)
     state_machine.setInitialState(disconnected_state)
+    communication_state.setInitialState(connect_state)
     # Transitions
     disconnected_state.addTransition(
         wiimote_window.ui.connect.clicked, communication_state)
