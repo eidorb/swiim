@@ -1,5 +1,5 @@
 import logging
-from PySide import QtCore
+from PySide import QtCore, QtGui
 from wiiuse import Wiimote
 
 logger = logging.getLogger('swiim.ui.states')
@@ -34,6 +34,10 @@ class Controller(object):
     def disconnected_entered(self):
         logger.debug('Entered disconnected state')
         self.view.set_permanent_message('Disconnected from Wiimote')
+        # Hide the button highlights initially
+        for child in self.view.ui.wiimoteImageHolder.findChildren(QtGui.QLabel):
+            child.hide()
+        self.view.ui.wiimoteImage.show()
         # Disable disconnect button
         self.view.ui.connect.setEnabled(True)
         self.view.ui.disconnect.setEnabled(False)
@@ -48,8 +52,8 @@ class Controller(object):
     def connect_entered(self):
         logger.debug('Entered connect state')
         self.view.set_permanent_message('Connecting to Wiimote')
-        wiimote = self.wiimote = Wiimote()
-
+        self.wiimote = Wiimote()
+        logger.error('%s', wiimote.BUTTON_A)
 
     def connected_entered(self):
         logger.debug('Entered connected state')

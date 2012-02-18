@@ -16,10 +16,6 @@ class View(object):
         self.main_window = QtGui.QMainWindow()
         self.ui = wiimote.Ui_MainWindow()
         self.ui.setupUi(self.main_window)
-        # Hide the button highlights initially
-        for child in self.ui.wiimoteImageHolder.findChildren(QtGui.QLabel):
-            child.hide()
-        self.ui.wiimoteImage.show()
         # Connect controls
         self.ui.controlRumble.clicked.connect(self._toggle_rumble)
         self.ui.controlLed1.clicked.connect(self._set_leds)
