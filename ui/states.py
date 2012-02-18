@@ -1,57 +1,60 @@
 import logging
 from PySide import QtCore
+from wiiuse import Wiimote
 
 logger = logging.getLogger('swiim.ui.states')
 
-class WiimoteWindowState(QtCore.QState):
-    """This state contains a reference to the Wiimote window Qt object"""
+class Controller(object):
+    def __init__(self, view):
+        logger.debug('Initialising controller')
+        self.view = view
+        self.state_machine = QtCore.QStateMachine()
+        # States
+        disconnected_state = QtCore.QState(self.state_machine)
+        disconnected_state.entered.connect(self.disconnected_entered)
 
-    def __init__(self, *args, **kwargs):
-        super(WiimoteWindowState, self).__init__(*args, **kwargs)
-        self.wiimote_window = WiimoteWindowState.wiimote_window
+        communication_state = QtCore.QState(self.state_machine)
+        communication_state.entered.connect(self.communication_entered)
 
-class DisconnectedState(WiimoteWindowState):
-    def onEntry(self, *args, **kwargs):
+        connect_state = QtCore.QState(communication_state)
+        connect_state.entered.connect(self.connect_entered)
+
+        connected_state = QtCore.QState(communication_state)
+        connected_state.entered.connect(self.connected_entered)
+
+        self.state_machine.setInitialState(disconnected_state)
+        communication_state.setInitialState(connect_state)
+
+        # Transitions
+        disconnected_state.addTransition(
+            view.ui.connect.clicked, communication_state)
+
+        self.state_machine.start()
+
+    def disconnected_entered(self):
         logger.debug('Entered disconnected state')
-        self.wiimote_window.set_permanent_message('Disconnected from Wiimote')
+        self.view.set_permanent_message('Disconnected from Wiimote')
         # Disable disconnect button
-        self.wiimote_window.ui.connect.setEnabled(True)
-        self.wiimote_window.ui.disconnect.setEnabled(False)
+        self.view.ui.connect.setEnabled(True)
+        self.view.ui.disconnect.setEnabled(False)
         # Disable Wiimote control
-        self.wiimote_window.ui.wiimote.setEnabled(False)
+        self.view.ui.wiimote.setEnabled(False)
 
-class CommunicationState(WiimoteWindowState):
-    def onEntry(self, *args, **kwargs):
+    def communication_entered(self):
         logger.debug('Entered communication state')
         # Disable connect button
-        self.wiimote_window.ui.connect.setEnabled(False)
+        self.view.ui.connect.setEnabled(False)
 
-class ConnectState(WiimoteWindowState):
-    def onEntry(self, *args, **kwargs):
+    def connect_entered(self):
         logger.debug('Entered connect state')
-        self.wiimote_window.set_permanent_message('Connecting to Wiimote')
+        self.view.set_permanent_message('Connecting to Wiimote')
+        wiimote = self.wiimote = Wiimote()
 
-class ConnectedState(WiimoteWindowState):
-    def onEntry(self, *args, **kwargs):
+
+    def connected_entered(self):
         logger.debug('Entered connected state')
-        self.wiimote_window.set_permanent_message('Connected to Wiimote')
+        self.view.set_permanent_message('Connected to Wiimote')
         # Enable disconnect button
-        self.wiimote_window.ui.disconnect.setEnabled(True)
+        self.view.ui.disconnect.setEnabled(True)
         # Enable Wiimote control
-        self.wiimote_window.ui.wiimote.setEnabled(True)
-
-def create_state_machine(wiimote_window):
-    logger.debug('Setting up state machine')
-    WiimoteWindowState.wiimote_window = wiimote_window
-    state_machine = QtCore.QStateMachine()
-    # States
-    disconnected_state = DisconnectedState(state_machine)
-    communication_state = CommunicationState(state_machine)
-    connect_state = ConnectState(communication_state)
-    connected_state = ConnectedState(communication_state)
-    state_machine.setInitialState(disconnected_state)
-    communication_state.setInitialState(connect_state)
-    # Transitions
-    disconnected_state.addTransition(
-        wiimote_window.ui.connect.clicked, communication_state)
-    return state_machine
+        self.view.ui.wiimote.setEnabled(True)

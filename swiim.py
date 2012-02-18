@@ -3,13 +3,13 @@ import sys
 from PySide import QtGui
 import operator
 import os
-from ui import wiimote
-from ui.states import create_state_machine
+from ui import wiimote, states
+from ui.states import Controller
 from wiiuse import Wiimote
 
 logger = logging.getLogger('swiim')
 
-class WiimoteWindow(object):
+class View(object):
     def __init__(self):
         # Change dir for ui images
         os.chdir(os.path.dirname(wiimote.__file__))
@@ -75,11 +75,9 @@ def main():
 
     # Create a Qt app and create populate the main window with a form
     app = QtGui.QApplication(sys.argv)
-    wiimote_window = WiimoteWindow()
+    view = View()
 
-    # Create and start state machine
-    state_machine = create_state_machine(wiimote_window)
-    state_machine.start()
+    controller = Controller(view)
 
     sys.exit(app.exec_())
 
