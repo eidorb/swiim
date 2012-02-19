@@ -32,6 +32,19 @@ WIIMOTE_BUTTON_ZACCEL_BIT4 = 0x2000
 WIIMOTE_BUTTON_ZACCEL_BIT5 = 0x4000
 WIIMOTE_BUTTON_UNKNOWN = 0x8000
 WIIMOTE_BUTTON_ALL = 0x1F9F
+buttons = {
+    'WIIMOTE_BUTTON_TWO': WIIMOTE_BUTTON_TWO,
+    'WIIMOTE_BUTTON_ONE': WIIMOTE_BUTTON_ONE,
+    'WIIMOTE_BUTTON_B': WIIMOTE_BUTTON_B,
+    'WIIMOTE_BUTTON_A': WIIMOTE_BUTTON_A,
+    'WIIMOTE_BUTTON_MINUS': WIIMOTE_BUTTON_MINUS,
+    'WIIMOTE_BUTTON_HOME': WIIMOTE_BUTTON_HOME,
+    'WIIMOTE_BUTTON_LEFT': WIIMOTE_BUTTON_LEFT,
+    'WIIMOTE_BUTTON_RIGHT': WIIMOTE_BUTTON_RIGHT,
+    'WIIMOTE_BUTTON_DOWN': WIIMOTE_BUTTON_DOWN,
+    'WIIMOTE_BUTTON_UP': WIIMOTE_BUTTON_UP,
+    'WIIMOTE_BUTTON_PLUS': WIIMOTE_BUTTON_PLUS,
+}
 
 # Nunchuk button codes
 NUNCHUK_BUTTON_Z = 0x01
@@ -297,35 +310,6 @@ else:
 logger.info('Using wiiuse library "%s"', dll_path)
 dll = ctypes.cdll.LoadLibrary(dll_path)
 
-# clearly a few more to do but I haven't needed them yet
-class api(Structure):
-    _fields_ = [('version', c_char_p),
-        ('api_version', c_int),
-        ('init', CFUNCTYPE(wiimote_pp, c_int, POINTER(c_int), event_cb_t,
-            ctrl_status_cb_t, dis_cb_t)),
-        ('disconnected', c_void_p),
-        ('rumble', CFUNCTYPE(None, wiimote_p, c_int)),
-        ('toggle_rumble', CFUNCTYPE(None, wiimote_p)),
-        ('set_leds', CFUNCTYPE(None, wiimote_p, c_int)),
-        ('motion_sensing', CFUNCTYPE(None, wiimote_p, c_int)),
-        ('read_data', c_void_p),
-        ('write_data', c_void_p),
-        ('status', CFUNCTYPE(None, wiimote_p)),
-        ('get_by_id', c_void_p),
-        ('set_flags', CFUNCTYPE(c_int, wiimote_p, c_int, c_int)),
-        ('set_smooth_alpha', CFUNCTYPE(c_float, wiimote_p, c_float)),
-        ('set_ir', CFUNCTYPE(None, wiimote_p, c_int)),
-        ('set_ir_vres', CFUNCTYPE(None, wiimote_p, c_uint, c_uint)),
-        ('set_ir_position', CFUNCTYPE(None, wiimote_p, c_int)),
-        ('set_aspect_ratio', CFUNCTYPE(None, wiimote_p, c_int)),
-        ('set_bluetooth_stack', c_void_p),
-        ('set_orient_threshold', CFUNCTYPE(None, wiimote_p, c_float)),
-        ('find', CFUNCTYPE(c_int, wiimote_pp, c_int, c_int)),
-        ('connect', CFUNCTYPE(c_int, wiimote_pp, c_int)),
-        ('disconnect', CFUNCTYPE(None, wiimote_p)),
-        ('poll', CFUNCTYPE(None, wiimote_pp, c_int))]
-
-
 # Wiiuse external API functions
 # wiiuse.c
 version = dll.wiiuse_version
@@ -346,9 +330,18 @@ toggle_rumble.restype = None
 set_leds = dll.wiiuse_set_leds
 set_leds.argtypes = (wiimote_p, c_int)
 set_leds.restype = None
+motion_sensing = dll.wiiuse_motion_sensing
+motion_sensing.argtypes = (wiimote_p, c_int)
+motion_sensing.restype = None
 status = dll.wiiuse_status
 status.argtypes = (wiimote_p,)
 status.restype = None
+set_flags = dll.wiiuse_set_flags
+set_flags.argtypes = (wiimote_p, c_int, c_int)
+set_flags.restype = c_int
+set_orient_threshold = dll.wiiuse_set_orient_threshold
+set_orient_threshold.argtypes = (wiimote_p, c_float)
+set_orient_threshold.restype = None
 
 # connect.c
 find = dll.wiiuse_find
@@ -366,93 +359,25 @@ poll = dll.wiiuse_poll
 poll.argtypes = (wiimote_pp, c_int)
 poll.restype = c_int
 
-#motion_sensing = dll.wiiuse_motion_sensing
-#motion_sensing.argtypes =
-#motion_sensing.restype =
-#set_ir = dll.wiiuse_set_ir
-#set_ir.argtypes =
-#set_ir.restype =
-#set_ir_vres = dll.wiiuse_set_ir_vres
-#set_ir_vres.argtypes =
-#set_ir_vres.restype =
-#set_ir_position = dll.wiiuse_set_ir_position
-#set_ir_position.argtypes =
-#set_ir_position.restype =
-#set_aspect_ratio = dll.wiiuse_set_aspect_ratio
-#set_aspect_ratio.argtypes =
-#set_aspect_ratio.restype =
-#set_orient_threshold = dll.wiiuse_set_orient_threshold
-#set_orient_threshold.argtypes =
-#set_orient_threshold.restype =
-#set_flags = dll.wiiuse_set_flags
-#set_flags.argtypes =
-#set_flags.restype =
-
-
-
-#
-#find = None
-#connect = None
-#set_leds = None
-#rumble = None
-#status = None
-#poll = None
-#disconnect = None
-#motion_sensing = None
-#set_ir = None
-#toggle_rumble = None
-#set_ir_vres = None
-#set_ir_position = None
-#set_aspect_ratio = None
-#set_orient_threshold = None
-#set_flags = None
-#
-## wrap the init function so the user doesn't have to fool with ctypes for the callbacks
-#def init(nwiimotes):
-#    '''Initialize the module'''
-#    # find the dll
-#    if os.name == 'nt':
-#        dll = ctypes.cdll.wiiuse
-#    else:
-#        dll = ctypes.cdll.LoadLibrary('libwiiuse.so')
-#
-#    # pointer to the api object he will return
-#    # wiiuse_api = POINTER(api)()
-#    # fill in the pointer
-#    # dll.wiiuse_main(byref(wiiuse_api))
-#    # get the object so we don't have to fool with the pointer
-#    # wapi = wiiuse_api[0]
-#
-#    # initialize our other function pointers
-#    global find, connect, set_leds, rumble, status, poll, disconnect, motion_sensing
-#    global set_ir, toggle_rumble, set_ir_vres, set_ir_position, set_aspect_ratio
-#    global set_orient_threshold, set_flags
-#    find = dll.wiiuse_find
-#    connect = dll.wiiuse_connect
-#    set_leds = dll.wiiuse_set_leds
-#    rumble = dll.wiiuse_rumble
-#    status = dll.wiiuse_status
-#    poll = dll.wiiuse_poll
-#    disconnect = dll.wiiuse_disconnect
-#    motion_sensing = dll.wiiuse_motion_sensing
-#    set_ir = dll.wiiuse_set_ir
-#    toggle_rumble = dll.wiiuse_toggle_rumble
-#    set_ir_vres = dll.wiiuse_set_ir_vres
-#    set_ir_position = dll.wiiuse_set_ir_position
-#    set_aspect_ratio = dll.wiiuse_set_aspect_ratio
-#    set_orient_threshold = dll.wiiuse_set_orient_threshold
-#    set_flags = dll.wiiuse_set_flags
-#
-#    # finally initialize _wiiuse
-#    dll.wiiuse_init.restype = wiimote_pp
-#    wiimotes = dll.wiiuse_init(nwiimotes)
-#
-#    return wiimotes
+# ir.c
+set_ir = dll.wiiuse_set_ir
+set_ir.argtypes = (wiimote_p, c_int)
+set_ir.restype = None
+set_ir_vres = dll.wiiuse_set_ir_vres
+set_ir_vres.argtypes = (wiimote_p, c_uint, c_uint)
+set_ir_vres.restype = None
+set_ir_position = dll.wiiuse_set_ir_position
+set_ir_position.argtypes = (wiimote_p, c_int)
+set_ir_position.restype = None
+set_aspect_ratio = dll.wiiuse_set_aspect_ratio
+set_aspect_ratio.argtypes = (wiimote_p, c_int)
+set_aspect_ratio.restype = None
 
 class Wiimote(object):
-    def __init__(self):
+    def __init__(self, controller):
         self.wiimotes = init(1)
-        self.wiimote = self.wiimotes[0]
+        self.wiimote = self.wiimotes.contents
+        self.controller = controller
         self.disconnect = False
 
     def connect(self):
@@ -471,9 +396,22 @@ class Wiimote(object):
         logger.debug('Entering poll loop')
         while True:
             if not self.disconnect:
-                event = poll(self.wiimotes, 1)
-                if event != WIIUSE_NONE:
-                    print 'some sort of event'
+                # Timeout
+
+                if poll(self.wiimotes, 1) != 0:
+                    dev = self.wiimote.contents
+                    print 'Event:', str(dev.event)
+                    if dev.event == WIIUSE_EVENT:
+                        buttons_pressed = []
+                        if dev.btns:
+                            for name, button in buttons.items():
+                                if is_pressed(dev, button):
+                                    buttons_pressed.append(button)
+                                    print name, 'pressed'
+                        self.controller.buttons_pressed.emit(buttons_pressed)
+                    elif dev.event == WIIUSE_DISCONNECT:
+                        logger.debug('Wiimote disconnected')
+                        self.disconnect = True
             else:
                 logger.debug('Breaking from poll loop')
                 break

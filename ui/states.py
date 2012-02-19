@@ -9,6 +9,7 @@ logger = logging.getLogger('swiim.ui.states')
 class Controller(QtCore.QObject):
     connect_succeeded = QtCore.Signal()
     connect_failed = QtCore.Signal()
+    buttons_pressed = QtCore.Signal(list)
 
     def __init__(self, view):
         super(Controller, self).__init__()
@@ -20,8 +21,23 @@ class Controller(QtCore.QObject):
         self.view.ui.controlLed2.clicked.connect(self.set_leds)
         self.view.ui.controlLed3.clicked.connect(self.set_leds)
         self.view.ui.controlLed4.clicked.connect(self.set_leds)
+        # Connect other signals
+        self.buttons_pressed.connect(self.highlight_buttons)
+        self.button_map = {
+            wiiuse.WIIMOTE_BUTTON_TWO: self.view.ui.btn2,
+            wiiuse.WIIMOTE_BUTTON_ONE: self.view.ui.btn1,
+            wiiuse.WIIMOTE_BUTTON_B: self.view.ui.btnB,
+            wiiuse.WIIMOTE_BUTTON_A: self.view.ui.btnA,
+            wiiuse.WIIMOTE_BUTTON_MINUS: self.view.ui.btnMinus,
+            wiiuse.WIIMOTE_BUTTON_HOME: self.view.ui.btnHome,
+            wiiuse.WIIMOTE_BUTTON_LEFT: self.view.ui.btnLeft,
+            wiiuse.WIIMOTE_BUTTON_RIGHT: self.view.ui.btnRight,
+            wiiuse.WIIMOTE_BUTTON_DOWN: self.view.ui.btnDown,
+            wiiuse.WIIMOTE_BUTTON_UP: self.view.ui.btnUp,
+            wiiuse.WIIMOTE_BUTTON_PLUS: self.view.ui.btnPlus,
+        }
+        # State machine
         self.state_machine = QtCore.QStateMachine()
-        # States
         disconnected_state = QtCore.QState(self.state_machine)
         communication_state = QtCore.QState(self.state_machine)
         connect_state = QtCore.QState(communication_state)
@@ -62,7 +78,7 @@ class Controller(QtCore.QObject):
         logger.debug('Entered communication state')
         # Disable connect button
         self.view.ui.connect.setEnabled(False)
-        self.wiimote = wiiuse.Wiimote()
+        self.wiimote = wiiuse.Wiimote(self)
 
     def connect_entered(self):
         logger.debug('Entered connect state')
@@ -107,3 +123,10 @@ class Controller(QtCore.QObject):
     def toggle_rumble(self):
         self.view.show_temporary_message('Toggling rumble')
         self.wiimote.toggle_rumble()
+
+    @QtCore.Slot(list)
+    def highlight_buttons(self, buttons):
+        for button_highlight in self.button_map.itervalues():
+            button_highlight.hide()
+        for button in buttons:
+            self.button_map[button].show()
