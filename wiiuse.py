@@ -1,7 +1,7 @@
 import ctypes
-from ctypes import Structure, c_void_p, c_int, c_byte, c_char, c_float
 import logging
 import os
+import _wiiuse
 
 logger = logging.getLogger('swiim.wiiuse')
 
@@ -53,7 +53,9 @@ class Wiimote(object):
         logger.info('Using wiiuse library "%s"', dll_path)
         self.dll = ctypes.cdll.LoadLibrary(dll_path)
         # Initialise an array of wiimotes
-        self._wiimotes = self.dll.wiiuse_init(1)
+#        self._wiimotes = self.dll.wiiuse_init(1)
+        self._wiimotes = _wiiuse.init(1)
+        self._wiimote = self._wiimotes[0]
         self.disconnect = False
 
     def connect(self):
@@ -80,4 +82,9 @@ class Wiimote(object):
                 break
 
     def set_leds(self, led_state):
-        self.dll.wiiuse_set_leds()
+        logger.debug('Setting LED state to {:08b}'.format(led_state))
+        self.dll.wiiuse_set_leds(self._wiimote, led_state)
+
+    def toggle_rumble(self):
+        logger.debug('Toggling rumble')
+        _wiiuse.toggle_rumble(self._wiimote)

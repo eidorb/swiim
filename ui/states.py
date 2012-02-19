@@ -1,6 +1,7 @@
 import logging
 import threading
 from PySide import QtCore, QtGui
+import operator
 from wiiuse import Wiimote
 
 logger = logging.getLogger('swiim.ui.states')
@@ -44,6 +45,12 @@ class Controller(QtCore.QObject):
         for child in self.view.ui.wiimoteImageHolder.findChildren(QtGui.QLabel):
             child.hide()
         self.view.ui.wiimoteImage.show()
+        # Connect controls
+        self.view.ui.controlRumble.clicked.connect(self.toggle_rumble)
+        self.view.ui.controlLed1.clicked.connect(self.set_leds)
+        self.view.ui.controlLed2.clicked.connect(self.set_leds)
+        self.view.ui.controlLed3.clicked.connect(self.set_leds)
+        self.view.ui.controlLed4.clicked.connect(self.set_leds)
         # Disable disconnect button
         self.view.ui.connect.setEnabled(True)
         self.view.ui.disconnect.setEnabled(False)
@@ -80,3 +87,23 @@ class Controller(QtCore.QObject):
         logger.debug('Waiting for poll thread to end')
         self.poll_thread.join()
         logger.debug('Poll thread ended')
+
+    def set_leds(self):
+        self.view.show_temporary_message('Setting LEDs')
+        led_map = {
+            'controlLed1': Wiimote.LED_1,
+            'controlLed2': Wiimote.LED_2,
+            'controlLed3': Wiimote.LED_3,
+            'controlLed4': Wiimote.LED_4,
+            }
+        # Assess which of the LED controls are checked. Bitwise OR the
+        # the corresponding LED values.
+        is_control_checked = lambda control: getattr(self.view.ui, control).isChecked()
+        leds = [led for control, led in led_map.iteritems()
+                if is_control_checked(control)]
+        led_state = reduce(operator.or_, leds, 0)
+        self.wiimote.set_leds(led_state)
+
+    def toggle_rumble(self):
+        self.view.show_temporary_message('Toggling rumble')
+        self.wiimote.toggle_rumble()
