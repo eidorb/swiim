@@ -13,6 +13,12 @@ WIIMOTE_LED_1 = 0x10
 WIIMOTE_LED_2 = 0x20
 WIIMOTE_LED_3 = 0x40
 WIIMOTE_LED_4 = 0x80
+leds = {
+    'WIIMOTE_LED_1': WIIMOTE_LED_1,
+    'WIIMOTE_LED_2': WIIMOTE_LED_2,
+    'WIIMOTE_LED_3': WIIMOTE_LED_3,
+    'WIIMOTE_LED_4': WIIMOTE_LED_4,
+}
 
 # Button codes
 WIIMOTE_BUTTON_TWO = 0x0001
@@ -114,161 +120,161 @@ WIIUSE_GUITAR_HERO_3_CTRL_REMOVED = 12
 # Wiiuse data structures
 class vec2b(Structure):
     _fields_ = [('x', c_byte),
-        ('y', c_byte)]
+                ('y', c_byte)]
 
 class vec3b(Structure):
     _fields_ = [('x', c_byte),
-        ('y', c_byte),
-        ('z', c_byte)]
+                ('y', c_byte),
+                ('z', c_byte)]
 
 class vec3f(Structure):
     _fields_ = [('x', c_float),
-        ('y', c_float),
-        ('z', c_float)]
+                ('y', c_float),
+                ('z', c_float)]
 
 class orient(Structure):
     _fields_ = [('roll', c_float),
-        ('pitch', c_float),
-        ('yaw', c_float),
-        ('a_roll', c_float),
-        ('a_pitch', c_float)]
+                ('pitch', c_float),
+                ('yaw', c_float),
+                ('a_roll', c_float),
+                ('a_pitch', c_float)]
 
 class gforce(Structure):
     _fields_ = [('x', c_float),
-        ('y', c_float),
-        ('z', c_float)]
+                ('y', c_float),
+                ('z', c_float)]
 
 
 class accel(Structure):
     _fields_ = [('cal_zero', vec3b),
-        ('cal_g', vec3b),
-        ('st_roll', c_float),
-        ('st_pitch', c_float),
-        ('st_alpha', c_float)]
+                ('cal_g', vec3b),
+                ('st_roll', c_float),
+                ('st_pitch', c_float),
+                ('st_alpha', c_float)]
 
 class ir_dot(Structure):
     _fields_ = [('visible', c_byte),
-        ('x', c_uint),
-        ('y', c_uint),
-        ('rx', c_short),
-        ('ry', c_short),
-        ('order', c_byte),
-        ('size', c_byte)]
+                ('x', c_uint),
+                ('y', c_uint),
+                ('rx', c_short),
+                ('ry', c_short),
+                ('order', c_byte),
+                ('size', c_byte)]
 
 class ir(Structure):
     _fields_ = [('dot', ir_dot*4),
-        ('num_dots', c_byte),
-        ('aspect', c_int),
-        ('pos', c_int),
-        ('vres', c_uint*2),
-        ('offset', c_int*2),
-        ('state', c_int),
-        ('ax', c_int),
-        ('ay', c_int),
-        ('x', c_int),
-        ('y', c_int),
-        ('distance', c_float),
-        ('z', c_float)]
+                ('num_dots', c_byte),
+                ('aspect', c_int),
+                ('pos', c_int),
+                ('vres', c_uint*2),
+                ('offset', c_int*2),
+                ('state', c_int),
+                ('ax', c_int),
+                ('ay', c_int),
+                ('x', c_int),
+                ('y', c_int),
+                ('distance', c_float),
+                ('z', c_float)]
 
 class joystick(Structure):
     _fields_ = [('max', vec2b),
-        ('min', vec2b),
-        ('center', vec2b),
-        ('ang', c_float),
-        ('mag', c_float)]
+                ('min', vec2b),
+                ('center', vec2b),
+                ('ang', c_float),
+                ('mag', c_float)]
 
 class nunchuk(Structure):
     _fields_ = [('accel_calib', accel),
-        ('js', joystick),
-        ('flags', POINTER(c_int)),
-        ('btns', c_byte),
-        ('btns_held', c_byte),
-        ('btns_released', c_byte),
-        ('orient_threshold', c_float),
-        ('accel_threshold', c_int),
-        ('accel', vec3b),
-        ('orient', orient),
-        ('gforce', vec3f)]
+                ('js', joystick),
+                ('flags', POINTER(c_int)),
+                ('btns', c_byte),
+                ('btns_held', c_byte),
+                ('btns_released', c_byte),
+                ('orient_threshold', c_float),
+                ('accel_threshold', c_int),
+                ('accel', vec3b),
+                ('orient', orient),
+                ('gforce', vec3f)]
 
 class classic_ctrl(Structure):
     _fields_ = [('btns', c_short),
-        ('btns_held', c_short),
-        ('btns_released', c_short),
-        ('r_shoulder', c_float),
-        ('l_shoulder', c_float),
-        ('ljs', joystick),
-        ('rjs', joystick)]
+                ('btns_held', c_short),
+                ('btns_released', c_short),
+                ('r_shoulder', c_float),
+                ('l_shoulder', c_float),
+                ('ljs', joystick),
+                ('rjs', joystick)]
 
 class guitar_hero_3(Structure):
     _fields_ = [('btns', c_short),
-        ('btns_held', c_short),
-        ('btns_released', c_short),
-        ('whammy_bar', c_float),
-        ('js', joystick)]
+                ('btns_held', c_short),
+                ('btns_released', c_short),
+                ('whammy_bar', c_float),
+                ('js', joystick)]
 
 class expansion_union(Union):
     _fields_ = [('nunchuk', nunchuk),
-        ('classic', classic_ctrl),
-        ('gh3', guitar_hero_3)]
+                ('classic', classic_ctrl),
+                ('gh3', guitar_hero_3)]
 
 class expansion(Structure):
     _fields_ = [('type', c_int),
-        ('u', expansion_union)]
+                ('u', expansion_union)]
 
 class wiimote_state(Structure):
     _fields_ = [('exp_ljs_ang', c_float),
-        ('exp_rjs_ang', c_float),
-        ('exp_ljs_mag', c_float),
-        ('exp_rjs_mag', c_float),
-        ('exp_btns', c_ushort),
-        ('exp_orient', orient),
-        ('exp_accel', vec3b),
-        ('exp_r_shoulder', c_float),
-        ('exp_l_shoulder', c_float),
-        ('ir_ax', c_int),
-        ('ir_ay', c_int),
-        ('ir_distance', c_float),
-        ('orient', orient),
-        ('btns', c_ushort),
-        ('accel', vec3b)]
+                ('exp_rjs_ang', c_float),
+                ('exp_ljs_mag', c_float),
+                ('exp_rjs_mag', c_float),
+                ('exp_btns', c_ushort),
+                ('exp_orient', orient),
+                ('exp_accel', vec3b),
+                ('exp_r_shoulder', c_float),
+                ('exp_l_shoulder', c_float),
+                ('ir_ax', c_int),
+                ('ir_ay', c_int),
+                ('ir_distance', c_float),
+                ('orient', orient),
+                ('btns', c_ushort),
+                ('accel', vec3b)]
 
 # wiimote structure dependent on OS
 if os.name == 'nt':
     JunkSkip = [('dev_handle', c_void_p),
-        ('hid_overlap', c_void_p*5), # skipping over this data structure
-        ('stack', c_int),
-        ('timeout', c_int),
-        ('normal_timeout', c_byte),
-        ('exp_timeout', c_byte)]
+                ('hid_overlap', c_void_p*5), # skipping over this data structure
+                ('stack', c_int),
+                ('timeout', c_int),
+                ('normal_timeout', c_byte),
+                ('exp_timeout', c_byte)]
 else:
     JunkSkip = [('bdaddr', c_void_p),
-        ('bdaddr_str', c_char*18),
-        ('out_sock', c_int),
-        ('in_sock', c_int)]
+                ('bdaddr_str', c_char*18),
+                ('out_sock', c_int),
+                ('in_sock', c_int)]
 
 class wiimote(Structure):
     _fields_ = [('unid', c_int),
                ] + JunkSkip + [
-        ('state', c_int),
-        ('leds', c_byte),
-        ('battery_level', c_float),
-        ('flags', c_int),
-        ('handshake_state', c_byte),
-        ('read_req', c_void_p),
-        ('accel_calib', accel),
-        ('exp', expansion),
-        ('accel', vec3b),
-        ('orient', orient),
-        ('gforce', gforce),
-        ('ir', ir),
-        ('btns', c_ushort),
-        ('btns_held', c_ushort),
-        ('btns_released', c_ushort),
-        ('orient_threshold', c_float),
-        ('accel_threshold', c_int),
-        ('lstate', wiimote_state),
-        ('event', c_int),
-        ('event_buf', c_byte * MAX_PAYLOAD)]
+                ('state', c_int),
+                ('leds', c_byte),
+                ('battery_level', c_float),
+                ('flags', c_int),
+                ('handshake_state', c_byte),
+                ('read_req', c_void_p),
+                ('accel_calib', accel),
+                ('exp', expansion),
+                ('accel', vec3b),
+                ('orient', orient),
+                ('gforce', gforce),
+                ('ir', ir),
+                ('btns', c_ushort),
+                ('btns_held', c_ushort),
+                ('btns_released', c_ushort),
+                ('orient_threshold', c_float),
+                ('accel_threshold', c_int),
+                ('lstate', wiimote_state),
+                ('event', c_int),
+                ('event_buf', c_byte * MAX_PAYLOAD)]
 
 wiimote_p = POINTER(wiimote)
 wiimote_pp = POINTER(wiimote_p)
@@ -301,6 +307,9 @@ def using_ir(wm):
 
 def using_speaker(wm):
     return wm.state & 0x100
+
+def is_led_set(dev, led):
+    return dev.leds & led
 
 dll_dir = os.path.dirname(__file__)
 if os.name =='nt':
@@ -396,22 +405,26 @@ class Wiimote(object):
         logger.debug('Entering poll loop')
         while True:
             if not self.disconnect:
-                # Timeout
-
+                # TODO: Timeout, then test connectivity
                 if poll(self.wiimotes, 1) != 0:
                     dev = self.wiimote.contents
-                    print 'Event:', str(dev.event)
+                    status = {
+                        'buttons': [],
+                        'leds': [],
+                        'battery_level': dev.battery_level,
+                    }
+                    for name, led in leds.items():
+                        if is_led_set(dev, led):
+                            status['leds'].append(led)
                     if dev.event == WIIUSE_EVENT:
-                        buttons_pressed = []
                         if dev.btns:
                             for name, button in buttons.items():
                                 if is_pressed(dev, button):
-                                    buttons_pressed.append(button)
-                                    print name, 'pressed'
-                        self.controller.buttons_pressed.emit(buttons_pressed)
+                                    status['buttons'].append(button)
                     elif dev.event == WIIUSE_DISCONNECT:
                         logger.debug('Wiimote disconnected')
                         self.disconnect = True
+                    self.controller.status_update.emit(status)
             else:
                 logger.debug('Breaking from poll loop')
                 break

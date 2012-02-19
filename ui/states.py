@@ -9,7 +9,7 @@ logger = logging.getLogger('swiim.ui.states')
 class Controller(QtCore.QObject):
     connect_succeeded = QtCore.Signal()
     connect_failed = QtCore.Signal()
-    buttons_pressed = QtCore.Signal(list)
+    status_update = QtCore.Signal(dict)
 
     def __init__(self, view):
         super(Controller, self).__init__()
@@ -22,7 +22,7 @@ class Controller(QtCore.QObject):
         self.view.ui.controlLed3.clicked.connect(self.set_leds)
         self.view.ui.controlLed4.clicked.connect(self.set_leds)
         # Connect other signals
-        self.buttons_pressed.connect(self.highlight_buttons)
+        self.status_update.connect(self.update)
         self.button_map = {
             wiiuse.WIIMOTE_BUTTON_TWO: self.view.ui.btn2,
             wiiuse.WIIMOTE_BUTTON_ONE: self.view.ui.btn1,
@@ -35,6 +35,18 @@ class Controller(QtCore.QObject):
             wiiuse.WIIMOTE_BUTTON_DOWN: self.view.ui.btnDown,
             wiiuse.WIIMOTE_BUTTON_UP: self.view.ui.btnUp,
             wiiuse.WIIMOTE_BUTTON_PLUS: self.view.ui.btnPlus,
+        }
+        self.led_control_map = {
+            self.view.ui.controlLed1: wiiuse.WIIMOTE_LED_1,
+            self.view.ui.controlLed2: wiiuse.WIIMOTE_LED_2,
+            self.view.ui.controlLed3: wiiuse.WIIMOTE_LED_3,
+            self.view.ui.controlLed4: wiiuse.WIIMOTE_LED_4,
+        }
+        self.led_map = {
+            wiiuse.WIIMOTE_LED_1: self.view.ui.led1,
+            wiiuse.WIIMOTE_LED_2: self.view.ui.led2,
+            wiiuse.WIIMOTE_LED_3: self.view.ui.led3,
+            wiiuse.WIIMOTE_LED_4: self.view.ui.led4,
         }
         # State machine
         self.state_machine = QtCore.QStateMachine()
@@ -64,10 +76,14 @@ class Controller(QtCore.QObject):
     def disconnected_entered(self):
         logger.debug('Entered disconnected state')
         self.view.set_permanent_message('Disconnected from Wiimote')
-        # Hide the button highlights initially
-        for child in self.view.ui.wiimoteImageHolder.findChildren(QtGui.QLabel):
-            child.hide()
-        self.view.ui.wiimoteImage.show()
+        # Hide button highlights
+        for control in self.button_map.itervalues():
+            control.hide()
+        # Hide LED lights
+        for led_light in self.led_map.itervalues():
+            led_light.hide()
+        # Set battery level to 0
+        self.view.ui.statusBattery.setValue(0)
         # Disable disconnect button
         self.view.ui.connect.setEnabled(True)
         self.view.ui.disconnect.setEnabled(False)
@@ -106,27 +122,36 @@ class Controller(QtCore.QObject):
         logger.debug('Poll thread ended')
 
     def set_leds(self):
+        """Set the LEDs on the Wiimote according to the checkbox controls."""
+
         self.view.show_temporary_message('Setting LEDs')
-        led_map = {
-            'controlLed1': wiiuse.WIIMOTE_LED_1,
-            'controlLed2': wiiuse.WIIMOTE_LED_2,
-            'controlLed3': wiiuse.WIIMOTE_LED_3,
-            'controlLed4': wiiuse.WIIMOTE_LED_4}
-        # Assess which of the LED controls are checked. Bitwise OR the
-        # the corresponding LED values.
-        is_control_checked = lambda control: getattr(self.view.ui, control).isChecked()
-        leds = [led for control, led in led_map.iteritems()
-                if is_control_checked(control)]
+        # Led controls that are checked
+        leds = [led for control, led in self.led_control_map.iteritems()
+                if control.isChecked()]
+        # Bitwise OR the led codes
         led_state = reduce(operator.or_, leds, 0)
         self.wiimote.set_leds(led_state)
 
     def toggle_rumble(self):
+        """Toggle the rumble on the Wiimote."""
+
         self.view.show_temporary_message('Toggling rumble')
         self.wiimote.toggle_rumble()
 
     @QtCore.Slot(list)
-    def highlight_buttons(self, buttons):
+    def update(self, status):
+        """Hide all the button highlights, then iterate through buttons and show
+        the corresponding button highlights."""
+
+        # Update button highlights
         for button_highlight in self.button_map.itervalues():
             button_highlight.hide()
-        for button in buttons:
+        for button in status['buttons']:
             self.button_map[button].show()
+        # Update LED lights
+        for led_light in self.led_map.itervalues():
+            led_light.hide()
+        for led in status['leds']:
+            self.led_map[led].show()
+        # Update batery level
+        self.view.ui.statusBattery.setValue(int(status['battery_level'] * 100))
