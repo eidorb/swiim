@@ -2,8 +2,7 @@ import logging
 import threading
 from PySide import QtCore, QtGui
 import operator
-import _wiiuse
-from wiiuse import Wiimote
+import wiiuse
 
 logger = logging.getLogger('swiim.ui.states')
 
@@ -63,7 +62,7 @@ class Controller(QtCore.QObject):
         logger.debug('Entered communication state')
         # Disable connect button
         self.view.ui.connect.setEnabled(False)
-        self.wiimote = Wiimote()
+        self.wiimote = wiiuse.Wiimote()
 
     def connect_entered(self):
         logger.debug('Entered connect state')
@@ -93,10 +92,10 @@ class Controller(QtCore.QObject):
     def set_leds(self):
         self.view.show_temporary_message('Setting LEDs')
         led_map = {
-            'controlLed1': _wiiuse.WIIMOTE_LED_1,
-            'controlLed2': _wiiuse.WIIMOTE_LED_2,
-            'controlLed3': _wiiuse.WIIMOTE_LED_3,
-            'controlLed4': _wiiuse.WIIMOTE_LED_4}
+            'controlLed1': wiiuse.WIIMOTE_LED_1,
+            'controlLed2': wiiuse.WIIMOTE_LED_2,
+            'controlLed3': wiiuse.WIIMOTE_LED_3,
+            'controlLed4': wiiuse.WIIMOTE_LED_4}
         # Assess which of the LED controls are checked. Bitwise OR the
         # the corresponding LED values.
         is_control_checked = lambda control: getattr(self.view.ui, control).isChecked()
