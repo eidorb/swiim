@@ -2,6 +2,7 @@ import logging
 import threading
 from PySide import QtCore, QtGui
 import operator
+import _wiiuse
 from wiiuse import Wiimote
 
 logger = logging.getLogger('swiim.ui.states')
@@ -14,6 +15,12 @@ class Controller(QtCore.QObject):
         super(Controller, self).__init__()
         logger.debug('Initialising controller')
         self.view = view
+        # Connect controls
+        self.view.ui.controlRumble.clicked.connect(self.toggle_rumble)
+        self.view.ui.controlLed1.clicked.connect(self.set_leds)
+        self.view.ui.controlLed2.clicked.connect(self.set_leds)
+        self.view.ui.controlLed3.clicked.connect(self.set_leds)
+        self.view.ui.controlLed4.clicked.connect(self.set_leds)
         self.state_machine = QtCore.QStateMachine()
         # States
         disconnected_state = QtCore.QState(self.state_machine)
@@ -34,7 +41,8 @@ class Controller(QtCore.QObject):
             view.ui.connect.clicked, communication_state)
         connect_state.addTransition(self.connect_succeeded, connected_state)
         connect_state.addTransition(self.connect_failed, disconnected_state)
-        communication_state.addTransition(view.ui.disconnect.clicked, disconnected_state)
+        communication_state.addTransition(
+            view.ui.disconnect.clicked, disconnected_state)
 
         self.state_machine.start()
 
@@ -45,12 +53,6 @@ class Controller(QtCore.QObject):
         for child in self.view.ui.wiimoteImageHolder.findChildren(QtGui.QLabel):
             child.hide()
         self.view.ui.wiimoteImage.show()
-        # Connect controls
-        self.view.ui.controlRumble.clicked.connect(self.toggle_rumble)
-        self.view.ui.controlLed1.clicked.connect(self.set_leds)
-        self.view.ui.controlLed2.clicked.connect(self.set_leds)
-        self.view.ui.controlLed3.clicked.connect(self.set_leds)
-        self.view.ui.controlLed4.clicked.connect(self.set_leds)
         # Disable disconnect button
         self.view.ui.connect.setEnabled(True)
         self.view.ui.disconnect.setEnabled(False)
@@ -91,11 +93,10 @@ class Controller(QtCore.QObject):
     def set_leds(self):
         self.view.show_temporary_message('Setting LEDs')
         led_map = {
-            'controlLed1': Wiimote.LED_1,
-            'controlLed2': Wiimote.LED_2,
-            'controlLed3': Wiimote.LED_3,
-            'controlLed4': Wiimote.LED_4,
-            }
+            'controlLed1': _wiiuse.WIIMOTE_LED_1,
+            'controlLed2': _wiiuse.WIIMOTE_LED_2,
+            'controlLed3': _wiiuse.WIIMOTE_LED_3,
+            'controlLed4': _wiiuse.WIIMOTE_LED_4}
         # Assess which of the LED controls are checked. Bitwise OR the
         # the corresponding LED values.
         is_control_checked = lambda control: getattr(self.view.ui, control).isChecked()
