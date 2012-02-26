@@ -10,6 +10,7 @@ class Controller(QtCore.QObject):
     connect_succeeded = QtCore.Signal()
     connect_failed = QtCore.Signal()
     status_update = QtCore.Signal(dict)
+    wiimote_disconnected = QtCore.Signal()
 
     def __init__(self, view):
         super(Controller, self).__init__()
@@ -70,6 +71,8 @@ class Controller(QtCore.QObject):
         connect_state.addTransition(self.connect_failed, disconnected_state)
         communication_state.addTransition(
             view.ui.disconnect.clicked, disconnected_state)
+        communication_state.addTransition(
+            self.wiimote_disconnected, disconnected_state)
 
         self.state_machine.start()
 
@@ -116,7 +119,7 @@ class Controller(QtCore.QObject):
         self.poll_thread.start()
 
     def connected_exited(self):
-        self.wiimote.disconnect = True
+        self.wiimote.disconnected = True
         logger.debug('Waiting for poll thread to end')
         self.poll_thread.join()
         logger.debug('Poll thread ended')

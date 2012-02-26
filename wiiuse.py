@@ -4,6 +4,7 @@ import ctypes
 from ctypes import (c_char_p, c_int, c_byte, c_uint, c_uint16, c_float,
                     c_short, c_void_p, c_char, c_ushort,
                     CFUNCTYPE, Structure, POINTER, Union)
+import time
 
 logger = logging.getLogger('swiim.wiiuse')
 
@@ -382,12 +383,14 @@ set_aspect_ratio = dll.wiiuse_set_aspect_ratio
 set_aspect_ratio.argtypes = (wiimote_p, c_int)
 set_aspect_ratio.restype = None
 
+TIMEOUT_SECONDS = 5
+
 class Wiimote(object):
     def __init__(self, controller):
         self.wiimotes = init(1)
         self.wiimote = self.wiimotes.contents
         self.controller = controller
-        self.disconnect = False
+        self.disconnected = False
 
     def connect(self):
         """Attempt connection to a Wiimote, timeout after 5 seconds.
@@ -403,10 +406,18 @@ class Wiimote(object):
 
     def poll(self):
         logger.debug('Entering poll loop')
+        # Enable motion sensing
+        motion_sensing(self.wiimote, 1)
+        start_time = time.time()
         while True:
-            if not self.disconnect:
+            elapsed_time = time.time() - start_time
+            if elapsed_time > TIMEOUT_SECONDS:
+                logger.debug('Wiimote connection timed out')
+                self.controller.wiimote_disconnected.emit()
+            if not self.disconnected:
                 # TODO: Timeout, then test connectivity
-                if poll(self.wiimotes, 1) != 0:
+                if poll(self.wiimotes, 1):
+                    start_time = time.time()
                     dev = self.wiimote.contents
                     status = {
                         'buttons': [],
@@ -421,12 +432,15 @@ class Wiimote(object):
                             for name, button in buttons.items():
                                 if is_pressed(dev, button):
                                     status['buttons'].append(button)
-                    elif dev.event == WIIUSE_DISCONNECT:
+                    elif (dev.event == WIIUSE_DISCONNECT or
+                          dev.event == WIIUSE_UNEXPECTED_DISCONNECT):
                         logger.debug('Wiimote disconnected')
-                        self.disconnect = True
+                        self.controller.wiimote_disconnected.emit()
                     self.controller.status_update.emit(status)
             else:
                 logger.debug('Breaking from poll loop')
+                # Disable motion sensing
+                motion_sensing(self.wiimote, 0)
                 break
 
     def set_leds(self, led_state):
