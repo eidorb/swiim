@@ -1,7 +1,7 @@
 import logging
 import os
 import ctypes
-from ctypes import (c_char_p, c_int, c_byte, c_uint, c_uint16, c_float,
+from ctypes import (c_char_p, c_int, c_ubyte, c_uint, c_uint16, c_float,
                     c_short, c_void_p, c_char, c_ushort,
                     CFUNCTYPE, Structure, POINTER, Union)
 import time
@@ -120,13 +120,13 @@ WIIUSE_GUITAR_HERO_3_CTRL_REMOVED = 12
 
 # Wiiuse data structures
 class vec2b(Structure):
-    _fields_ = [('x', c_byte),
-                ('y', c_byte)]
+    _fields_ = [('x', c_ubyte),
+                ('y', c_ubyte)]
 
 class vec3b(Structure):
-    _fields_ = [('x', c_byte),
-                ('y', c_byte),
-                ('z', c_byte)]
+    _fields_ = [('x', c_ubyte),
+                ('y', c_ubyte),
+                ('z', c_ubyte)]
 
 class vec3f(Structure):
     _fields_ = [('x', c_float),
@@ -154,17 +154,17 @@ class accel(Structure):
                 ('st_alpha', c_float)]
 
 class ir_dot(Structure):
-    _fields_ = [('visible', c_byte),
+    _fields_ = [('visible', c_ubyte),
                 ('x', c_uint),
                 ('y', c_uint),
                 ('rx', c_short),
                 ('ry', c_short),
-                ('order', c_byte),
-                ('size', c_byte)]
+                ('order', c_ubyte),
+                ('size', c_ubyte)]
 
 class ir(Structure):
     _fields_ = [('dot', ir_dot*4),
-                ('num_dots', c_byte),
+                ('num_dots', c_ubyte),
                 ('aspect', c_int),
                 ('pos', c_int),
                 ('vres', c_uint*2),
@@ -188,9 +188,9 @@ class nunchuk(Structure):
     _fields_ = [('accel_calib', accel),
                 ('js', joystick),
                 ('flags', POINTER(c_int)),
-                ('btns', c_byte),
-                ('btns_held', c_byte),
-                ('btns_released', c_byte),
+                ('btns', c_ubyte),
+                ('btns_held', c_ubyte),
+                ('btns_released', c_ubyte),
                 ('orient_threshold', c_float),
                 ('accel_threshold', c_int),
                 ('accel', vec3b),
@@ -245,8 +245,8 @@ if os.name == 'nt':
                 ('hid_overlap', c_void_p*5), # skipping over this data structure
                 ('stack', c_int),
                 ('timeout', c_int),
-                ('normal_timeout', c_byte),
-                ('exp_timeout', c_byte)]
+                ('normal_timeout', c_ubyte),
+                ('exp_timeout', c_ubyte)]
 else:
     JunkSkip = [('bdaddr', c_void_p),
                 ('bdaddr_str', c_char*18),
@@ -257,10 +257,10 @@ class wiimote(Structure):
     _fields_ = [('unid', c_int),
                ] + JunkSkip + [
                 ('state', c_int),
-                ('leds', c_byte),
+                ('leds', c_ubyte),
                 ('battery_level', c_float),
                 ('flags', c_int),
-                ('handshake_state', c_byte),
+                ('handshake_state', c_ubyte),
                 ('read_req', c_void_p),
                 ('accel_calib', accel),
                 ('exp', expansion),
@@ -275,13 +275,13 @@ class wiimote(Structure):
                 ('accel_threshold', c_int),
                 ('lstate', wiimote_state),
                 ('event', c_int),
-                ('event_buf', c_byte * MAX_PAYLOAD)]
+                ('event_buf', c_ubyte * MAX_PAYLOAD)]
 
 wiimote_p = POINTER(wiimote)
 wiimote_pp = POINTER(wiimote_p)
 
 event_cb_t = CFUNCTYPE(None, wiimote_p)
-read_cb_t = CFUNCTYPE(None, wiimote_p, POINTER(c_byte), c_uint16)
+read_cb_t = CFUNCTYPE(None, wiimote_p, POINTER(c_ubyte), c_uint16)
 ctrl_status_cb_t = CFUNCTYPE(None, wiimote_p, c_int, c_int, c_int, POINTER(c_int), c_float)
 dis_cb_t = CFUNCTYPE(None, wiimote_p)
 
@@ -419,11 +419,13 @@ class Wiimote(object):
                 if poll(self.wiimotes, 1):
                     start_time = time.time()
                     dev = self.wiimote.contents
+                    # Update status of buttons, LEDs and battery level
                     status = {
                         'buttons': [],
                         'leds': [],
                         'battery_level': dev.battery_level,
                     }
+                    logger.debug('accel %4d, %4d, %4d gforce %4f, %4f, %4f', dev.accel.x, dev.accel.y, dev.accel.z, dev.gforce.x, dev.gforce.y, dev.gforce.z)
                     for name, led in leds.items():
                         if is_led_set(dev, led):
                             status['leds'].append(led)
