@@ -396,7 +396,6 @@ class Wiimote(object):
         """Attempt connection to a Wiimote, timeout after 5 seconds.
         Return the number of Wiimotes successfully connected to. In this case,
         it will 1 or 0."""
-
         found = find(self.wiimotes, 1, 5)
         logger.debug('Found %s remote(s)', found)
         if found:
@@ -409,23 +408,30 @@ class Wiimote(object):
         # Enable motion sensing
         motion_sensing(self.wiimote, 1)
         start_time = time.time()
+        # Set an initial inactivity timeout
+        timeout = time.time() + TIMEOUT_SECONDS
         while True:
-            elapsed_time = time.time() - start_time
-            if elapsed_time > TIMEOUT_SECONDS:
+            # If the wiimote has timed out, disconnect.
+            if time.time() > timeout:
                 logger.debug('Wiimote connection timed out')
                 self.controller.wiimote_disconnected.emit()
             if not self.disconnected:
-                # TODO: Timeout, then test connectivity
                 if poll(self.wiimotes, 1):
-                    start_time = time.time()
+                    current_time = time.time()
+                    # The wiimote is active, reset the timeout
+                    timeout = current_time + TIMEOUT_SECONDS
                     dev = self.wiimote.contents
                     # Update status of buttons, LEDs and battery level
                     status = {
                         'buttons': [],
                         'leds': [],
                         'battery_level': dev.battery_level,
+                        'elapsed_time': current_time - start_time,
+                        'accel': {'x': dev.accel.x,
+                                  'y': dev.accel.y,
+                                  'z': dev.accel.z}
                     }
-                    logger.debug('accel %4d, %4d, %4d gforce %4f, %4f, %4f', dev.accel.x, dev.accel.y, dev.accel.z, dev.gforce.x, dev.gforce.y, dev.gforce.z)
+                    start_time = current_time
                     for name, led in leds.items():
                         if is_led_set(dev, led):
                             status['leds'].append(led)
