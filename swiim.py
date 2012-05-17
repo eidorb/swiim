@@ -45,7 +45,9 @@ def main():
 
     controller = Controller(view)
 
-    sys.exit(app.exec_())
+    app.exec_()
+    logger.info('Program exiting')
+    sys.exit()
 
 if __name__ == '__main__':
     main()
