@@ -31,14 +31,7 @@ class View(object):
         self.ui.statusbar.showMessage(message, 600)
 
 def main():
-    # Setup logging
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(name)s %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-
+    setup_logging()
     # Create a Qt app and create populate the main window with a form
     app = QtGui.QApplication(sys.argv)
     view = View()
@@ -48,6 +41,15 @@ def main():
     app.exec_()
     logger.info('Program exiting')
     sys.exit()
+
+def setup_logging():
+    """Set up logging. Uses a StreamHandler to log to the console"""
+    formatter = logging.Formatter('%(name)s %(levelname)s - %(message)s')
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    console_handler.setFormatter(formatter)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(console_handler)
 
 if __name__ == '__main__':
     main()
