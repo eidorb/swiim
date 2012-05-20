@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wiimote.ui'
 #
-# Created: Wed Feb 08 20:45:24 2012
+# Created: Sun May 20 16:33:56 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.0.7
 #
 # WARNING! All changes made in this file will be lost!
