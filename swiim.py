@@ -4,6 +4,11 @@ from PySide import QtGui
 import os
 from ui import wiimote
 from ui.states import Controller
+import matplotlib
+matplotlib.use('Qt4Agg')
+matplotlib.rcParams['backend.qt4']='PySide'
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 logger = logging.getLogger('swiim')
 
@@ -17,6 +22,16 @@ class View(object):
         # Statusbar permanent message
         self._permanentMessage = QtGui.QLabel()
         self.ui.statusbar.addPermanentWidget(self._permanentMessage)
+        # Add matplotlib widget
+        # generate the plot
+        fig = Figure(figsize=(600,600), dpi=72, facecolor=(1,1,1), edgecolor=(0,0,0))
+        ax = fig.add_subplot(111)
+        ax.plot([0,1])
+        # generate the canvas to display the plot
+        canvas = FigureCanvas(fig)
+
+        # add the plot canvas to a window
+        self.ui.connection.layout().addWidget(canvas)
         self.main_window.show()
 
     def _update_status(self):
