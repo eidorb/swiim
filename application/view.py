@@ -1,6 +1,6 @@
 import logging
 from PySide import QtGui
-import swiim
+from ui import swiim
 
 log = logging.getLogger('swiim.' + __name__)
 

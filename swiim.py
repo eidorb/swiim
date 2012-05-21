@@ -1,6 +1,6 @@
 import logging
 import sys
-from ui.view import SwiimApplication
+from application.view import SwiimApplication
 
 log = logging.getLogger('swiim')
 
