@@ -29,7 +29,7 @@ class SwiimApplication(object):
     def show_temporary_message(self, message):
         """Show `message` in the status bar temporarily"""
 
-        self.ui.statusbar.showMessage(message, 600)
+        self.ui.statusbar.showMessage(message, 1000)
 
     def run(self):
         """Enter the qapplication's main event loop."""
