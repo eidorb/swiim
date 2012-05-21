@@ -1,14 +1,12 @@
 import logging
 import sys
-from application.view import SwiimApplication
+from application.controller import start_application
 
 log = logging.getLogger('swiim')
 
 def main():
     setup_logging()
-    swiim_application = SwiimApplication()
-    swiim_application.run()
-    log.info('Program exiting')
+    start_application()
     sys.exit()
 
 def setup_logging():
