@@ -32,9 +32,9 @@ class StateMachine(QtCore.QStateMachine):
 class Initial(QState):
     def onEntry(self, event):
         # Set up signals
-        self.addTransition(self.machine().app.ui.actionNew.triggered,
+        self.addTransition(self.machine().app.main_window.actionNew.triggered,
                            self.machine().test)
-        StateMachine.app.set_permanent_message(
+        self.machine().app.set_permanent_message(
             'Select New from the File menu to test'
         )
 
@@ -44,9 +44,11 @@ class Test(QState):
         self.machine().app.set_permanent_message('Testing')
         # Change directory for correct referencing of image files
         os.chdir(os.path.join(os.path.dirname(__file__), 'ui'))
-        widget = QtGui.QWidget()
-        test.Ui_Form().setupUi(widget)
-        self.machine().app.main_window.setCentralWidget(widget)
+
+        test_form = test.Ui_Form()
+        test_form.widget = QtGui.QWidget()
+        test_form.setupUi(test_form.widget)
+        self.machine().app.main_window.widget.setCentralWidget(test_form.widget)
 
 class Disconnected(QState):
     def onEntry(self, event):

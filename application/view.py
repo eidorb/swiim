@@ -12,24 +12,25 @@ class SwiimApplication(object):
     def setup_ui(self):
         """Create a main window. Populate with the swiim ui and display it"""
 
-        self.main_window = QtGui.QMainWindow()
-        self.ui = swiim.Ui_MainWindow()
-        self.ui.setupUi(self.main_window)
+        self.main_window = swiim.Ui_MainWindow()
+        self.main_window.widget = QtGui.QMainWindow()
+        self.main_window.setupUi(self.main_window.widget)
         # Add widget to status bar for permanent messages
-        self.permanent_message = QtGui.QLabel()
-        self.ui.statusbar.addPermanentWidget(self.permanent_message)
-        self.main_window.show()
+        self.main_window.permanent_message = QtGui.QLabel()
+        self.main_window.statusbar.addPermanentWidget(
+            self.main_window.permanent_message)
+        self.main_window.widget.show()
         log.debug('Set up main UI')
 
     def set_permanent_message(self, message):
         """Set the permanent status bar message to `message`"""
 
-        self.permanent_message.setText(message)
+        self.main_window.permanent_message.setText(message)
 
     def show_temporary_message(self, message):
         """Show `message` in the status bar temporarily"""
 
-        self.ui.statusbar.showMessage(message, 1000)
+        self.main_window.statusbar.showMessage(message, 1000)
 
     def run(self):
         """Enter the qapplication's main event loop."""
