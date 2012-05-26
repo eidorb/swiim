@@ -48,14 +48,27 @@ class Initial(SwiimState):
 
 class TestWiimote(SwiimState):
     def onEntry(self, event):
-        log.debug('Test state entered')
+        log.debug('Test Wiimote state entered')
         self.app.set_permanent_message('Wiimote connection test')
+        wiimote_test = self.app.forms.wiimote_test
+        # Hide button highlights
+        for highlight in wiimote_test.button_highlights_map.itervalues():
+            highlight.hide()
+        # Hide LED highlights
+        for highlight in wiimote_test.led_highlights_map.itervalues():
+            highlight.hide()
+        # Set battery level to 0
+        wiimote_test.statusBattery.setValue(0)
+        # Disable disconnect button
+        wiimote_test.connect.setEnabled(True)
+        wiimote_test.disconnect.setEnabled(False)
+        # Disable Wiimote control and status group boxes
+        wiimote_test.controlGroup.setEnabled(False)
+        wiimote_test.statusGroup.setEnabled(False)
         # Disable test wiimote action
         self.app.forms.swiim.actionTestWiimote.setEnabled(False)
         # Set the test wiimote form as the central widget
-        self.app.forms.swiim.setCentralWidget(
-            self.app.forms.wiimote_test
-        )
+        self.app.forms.swiim.setCentralWidget(wiimote_test)
 
     def onExit(self, *args, **kwargs):
         # Re-enable test wiimote action
