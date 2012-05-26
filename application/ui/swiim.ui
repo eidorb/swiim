@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Swiim</class>
- <widget class="QMainWindow" name="Swiim">
+ <class>swiimQMainWindow</class>
+ <widget class="QMainWindow" name="swiimQMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
