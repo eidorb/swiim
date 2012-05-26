@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'swiim.ui'
 #
-# Created: Sat May 26 22:29:50 2012
+# Created: Sun May 27 00:54:06 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.0.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -16,6 +16,11 @@ class Ui_swiimQMainWindow(object):
         swiimQMainWindow.setMinimumSize(QtCore.QSize(600, 600))
         self.centralwidget = QtGui.QWidget(swiimQMainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.stackedWidget = QtGui.QStackedWidget(self.centralwidget)
+        self.stackedWidget.setObjectName("stackedWidget")
+        self.horizontalLayout.addWidget(self.stackedWidget)
         swiimQMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(swiimQMainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
