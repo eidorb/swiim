@@ -18,11 +18,20 @@ class SwiimApplication(object):
         log.debug('Loading forms')
         # Change directory for correct referencing of image files
         os.chdir(os.path.join(os.path.dirname(__file__), 'ui'))
-        self.forms = {}
-        self.forms['swiim'] = SwiimWindow()
-        self.forms['wiimote_test'] = WiimoteTestForm()
+        # Create the swiim form by itself. The other forms need to be added to
+        # swiim's stacked widget. Adding swiim to the forms dictionary after
+        # this simplifies the process.
+        swiim = SwiimWindow()
+        # Add a blank widget first. It is what will be displayed.
+        swiim.stackedWidget.addWidget(QtGui.QWidget())
+        self.forms = {
+            'wiimote_test': WiimoteTestForm(),
+        }
+        for form in self.forms.itervalues():
+            swiim.stackedWidget.addWidget(form)
+        self.forms['swiim'] = swiim
         log.debug('Showing swiim window')
-        self.forms['swiim'].show()
+        swiim.show()
 
     def set_permanent_message(self, message):
         """Set the permanent status bar message to `message`"""
