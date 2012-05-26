@@ -1,34 +1,38 @@
 import logging
 from PySide import QtGui
-from ui import forms
+import os
+from forms import SwiimWindow, WiimoteTestForm
 
 log = logging.getLogger('swiim.' + __name__)
 
 class SwiimApplication(object):
     def __init__(self):
         self.application = QtGui.QApplication([])
-        self.setup_ui()
+        self.setup_forms()
 
-    def setup_ui(self):
-        """Create a main window. Populate with the swiim ui and display it"""
+    class forms(object):
+        pass
 
-        self.main_window = forms.MainWindow()
-        # Add widget to status bar for permanent messages
-        self.main_window.permanent_message = QtGui.QLabel()
-        self.main_window.statusbar.addPermanentWidget(
-            self.main_window.permanent_message)
-        self.main_window.show()
-        log.debug('Set up main UI')
+    def setup_forms(self):
+        """Load the form classes and display the main window."""
+
+        log.debug('Loading forms')
+        # Change directory for correct referencing of image files
+        os.chdir(os.path.join(os.path.dirname(__file__), 'ui'))
+        self.forms.swiim = SwiimWindow()
+        self.forms.wiimote_test = WiimoteTestForm()
+        log.debug('Showing swiim window')
+        self.forms.swiim.show()
 
     def set_permanent_message(self, message):
         """Set the permanent status bar message to `message`"""
 
-        self.main_window.permanent_message.setText(message)
+        self.forms.swiim.permanent_message.setText(message)
 
     def show_temporary_message(self, message):
         """Show `message` in the status bar temporarily"""
 
-        self.main_window.statusbar.showMessage(message, 1000)
+        self.forms.swiim.statusbar.showMessage(message, 1000)
 
     def run(self):
         """Enter the qapplication's main event loop."""

@@ -29,15 +29,25 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="actionTestWiimote"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionNew"/>
-    <addaction name="actionOpen"/>
-    <addaction name="actionTest"/>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Tools"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -53,28 +63,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionTestWiimote"/>
   </widget>
-  <action name="actionNew">
-   <property name="icon">
-    <iconset>
-     <normalon>../../../../../../.designer/backup/images/wiimote.png</normalon>
-    </iconset>
-   </property>
+  <action name="actionTestWiimote">
    <property name="text">
-    <string>New</string>
+    <string>Test &amp;Wiimote</string>
    </property>
-   <property name="iconVisibleInMenu">
-    <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen">
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </action>
-  <action name="actionTest">
-   <property name="text">
-    <string>Test</string>
+   <property name="toolTip">
+    <string>Test connection with the Wiimote</string>
    </property>
   </action>
  </widget>
