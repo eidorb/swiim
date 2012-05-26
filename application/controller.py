@@ -40,7 +40,7 @@ class SwiimState(QState):
 class Initial(SwiimState):
     def setup_transitions(self):
         self.addTransition(
-            self.app.forms.swiim.actionTestWiimote.triggered,
+            self.app.forms['swiim'].actionTestWiimote.triggered,
             self.state_machine.test_wiimote)
 
     def onEntry(self, event):
@@ -50,7 +50,7 @@ class TestWiimote(SwiimState):
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
         self.app.set_permanent_message('Wiimote connection test')
-        wiimote_test = self.app.forms.wiimote_test
+        wiimote_test = self.app.forms['wiimote_test']
         # Hide button highlights
         for highlight in wiimote_test.button_highlights_map.itervalues():
             highlight.hide()
@@ -66,13 +66,13 @@ class TestWiimote(SwiimState):
         wiimote_test.controlGroup.setEnabled(False)
         wiimote_test.statusGroup.setEnabled(False)
         # Disable test wiimote action
-        self.app.forms.swiim.actionTestWiimote.setEnabled(False)
+        self.app.forms['swiim'].actionTestWiimote.setEnabled(False)
         # Set the test wiimote form as the central widget
-        self.app.forms.swiim.setCentralWidget(wiimote_test)
+        self.app.forms['swiim'].setCentralWidget(wiimote_test)
 
     def onExit(self, *args, **kwargs):
         # Re-enable test wiimote action
-        self.app.forms.swiim.actionTestWiimote.setEnabled(True)
+        self.app.forms['swiim'].actionTestWiimote.setEnabled(True)
 
 class Disconnected(SwiimState):
     def onEntry(self, event):

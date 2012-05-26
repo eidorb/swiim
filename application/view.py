@@ -8,31 +8,29 @@ log = logging.getLogger('swiim.' + __name__)
 class SwiimApplication(object):
     def __init__(self):
         self.application = QtGui.QApplication([])
-        self.setup_forms()
+        self.create_forms()
 
     class forms(object):
         pass
 
-    def setup_forms(self):
-        """Load the form classes and display the main window."""
-
+    def create_forms(self):
+        """Create the form objects and display the main window."""
         log.debug('Loading forms')
         # Change directory for correct referencing of image files
         os.chdir(os.path.join(os.path.dirname(__file__), 'ui'))
-        self.forms.swiim = SwiimWindow()
-        self.forms.wiimote_test = WiimoteTestForm()
+        self.forms = {}
+        self.forms['swiim'] = SwiimWindow()
+        self.forms['wiimote_test'] = WiimoteTestForm()
         log.debug('Showing swiim window')
-        self.forms.swiim.show()
+        self.forms['swiim'].show()
 
     def set_permanent_message(self, message):
         """Set the permanent status bar message to `message`"""
-
-        self.forms.swiim.permanent_message.setText(message)
+        self.forms['swiim'].permanent_message.setText(message)
 
     def show_temporary_message(self, message):
         """Show `message` in the status bar temporarily"""
-
-        self.forms.swiim.statusbar.showMessage(message, 1000)
+        self.forms['swiim'].statusbar.showMessage(message, 1000)
 
     def run(self):
         """Enter the qapplication's main event loop."""
