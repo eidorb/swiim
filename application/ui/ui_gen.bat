@@ -1,5 +1,4 @@
-..\..\swiimenv\Scripts\pyside-uic.exe --output=swiim.py -x -d swiim.ui
-..\..\swiimenv\Scripts\python swiim.py
-..\..\swiimenv\Scripts\pyside-uic.exe --output=wiimote.py -x -d wiimote.ui
-..\..\swiimenv\Scripts\python wiimote.py
-pause
+..\..\..\swiimenv\Scripts\pyside-uic.exe --output=swiim.py -x -d swiim.ui
+..\..\..\swiimenv\Scripts\python swiim.py
+..\..\..\swiimenv\Scripts\pyside-uic.exe --output=test.py -x -d test.ui
+..\..\..\swiimenv\Scripts\python test.py
