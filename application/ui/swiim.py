@@ -2,63 +2,67 @@
 
 # Form implementation generated from reading ui file 'swiim.ui'
 #
-# Created: Sun May 20 16:33:44 2012
+# Created: Sat May 26 19:26:53 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.0.7
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(640, 480)
-        self.centralwidget = QtGui.QWidget(MainWindow)
+class Ui_Swiim(object):
+    def setupUi(self, Swiim):
+        Swiim.setObjectName("Swiim")
+        Swiim.resize(800, 600)
+        Swiim.setMinimumSize(QtCore.QSize(600, 600))
+        self.centralwidget = QtGui.QWidget(Swiim)
         self.centralwidget.setObjectName("centralwidget")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
+        Swiim.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(Swiim)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
+        Swiim.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(Swiim)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.toolBar = QtGui.QToolBar(MainWindow)
+        Swiim.setStatusBar(self.statusbar)
+        self.toolBar = QtGui.QToolBar(Swiim)
         self.toolBar.setMovable(False)
         self.toolBar.setObjectName("toolBar")
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        MainWindow.insertToolBarBreak(self.toolBar)
-        self.actionNew = QtGui.QAction(MainWindow)
+        Swiim.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        self.actionNew = QtGui.QAction(Swiim)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/wiimote.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon.addPixmap(QtGui.QPixmap("../../../../../../.designer/backup/images/wiimote.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.actionNew.setIcon(icon)
         self.actionNew.setIconVisibleInMenu(True)
         self.actionNew.setObjectName("actionNew")
-        self.actionOpen = QtGui.QAction(MainWindow)
+        self.actionOpen = QtGui.QAction(Swiim)
         self.actionOpen.setObjectName("actionOpen")
+        self.actionTest = QtGui.QAction(Swiim)
+        self.actionTest.setObjectName("actionTest")
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionTest)
         self.menubar.addAction(self.menuFile.menuAction())
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(Swiim)
+        QtCore.QMetaObject.connectSlotsByName(Swiim)
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionNew.setText(QtGui.QApplication.translate("MainWindow", "New", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionOpen.setText(QtGui.QApplication.translate("MainWindow", "Open", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, Swiim):
+        Swiim.setWindowTitle(QtGui.QApplication.translate("Swiim", "Swiim", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("Swiim", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.toolBar.setWindowTitle(QtGui.QApplication.translate("Swiim", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew.setText(QtGui.QApplication.translate("Swiim", "New", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen.setText(QtGui.QApplication.translate("Swiim", "Open", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionTest.setText(QtGui.QApplication.translate("Swiim", "Test", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    Swiim = QtGui.QMainWindow()
+    ui = Ui_Swiim()
+    ui.setupUi(Swiim)
+    Swiim.show()
     sys.exit(app.exec_())
 
