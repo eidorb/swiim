@@ -1,6 +1,6 @@
 import logging
 from PySide import QtGui
-from ui import swiim
+from ui import forms
 
 log = logging.getLogger('swiim.' + __name__)
 
@@ -12,10 +12,7 @@ class SwiimApplication(object):
     def setup_ui(self):
         """Create a main window. Populate with the swiim ui and display it"""
 
-        class MainWindowForm(QtGui.QMainWindow, swiim.Ui_MainWindow):
-            pass
-        self.main_window = MainWindowForm()
-        self.main_window.setupUi(self.main_window)
+        self.main_window = forms.MainWindow()
         # Add widget to status bar for permanent messages
         self.main_window.permanent_message = QtGui.QLabel()
         self.main_window.statusbar.addPermanentWidget(
