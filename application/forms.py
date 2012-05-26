@@ -1,13 +1,12 @@
-import test
-import swiim
+from ui import swiim, wiimote_test
 from PySide import QtGui
 
-class MainWindow(QtGui.QMainWindow, swiim.Ui_MainWindow):
+class SwiimWindow(QtGui.QMainWindow, swiim.Ui_swiimQMainWindow):
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super(SwiimWindow, self).__init__(parent)
         self.setupUi(self)
 
-class TestForm(QtGui.QWidget, test.Ui_Form):
+class WiimoteTestForm(QtGui.QWidget, wiimote_test.Ui_wiimoteTestQWidget):
     def __init__(self, parent=None):
-        super(TestForm, self).__init__(parent)
+        super(WiimoteTestForm, self).__init__(parent)
         self.setupUi(self)
