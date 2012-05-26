@@ -48,7 +48,7 @@ class Test(QState):
         test_form = test.Ui_Form()
         test_form.widget = QtGui.QWidget()
         test_form.setupUi(test_form.widget)
-        self.machine().app.main_window.widget.setCentralWidget(test_form.widget)
+        self.machine().app.main_window.setCentralWidget(test_form.widget)
 
 class Disconnected(QState):
     def onEntry(self, event):
