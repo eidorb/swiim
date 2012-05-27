@@ -24,7 +24,7 @@ class SwiimStateMachine(QtCore.QStateMachine):
     def create_states(self):
         """Create the states that make up the state machine."""
         self.initial = Initial(self, self)
-        self.test_wiimote = TestWiimote(self, self)
+        self.wiimote_test = WiimoteTest(self, self)
 
         self.initial.setup_transitions()
 
@@ -37,16 +37,19 @@ class SwiimState(QState):
         self.state_machine = state_machine
         self.app = state_machine.app
 
+    def setup_transitions(self):
+        pass
+
 class Initial(SwiimState):
     def setup_transitions(self):
         self.addTransition(
             self.app.forms['swiim'].actionTestWiimote.triggered,
-            self.state_machine.test_wiimote)
+            self.state_machine.wiimote_test)
 
     def onEntry(self, event):
         log.debug('Initial state entered')
 
-class TestWiimote(SwiimState):
+class WiimoteTest(SwiimState):
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
         self.app.set_permanent_message('Wiimote connection test')
@@ -67,8 +70,8 @@ class TestWiimote(SwiimState):
         wiimote_test.statusGroup.setEnabled(False)
         # Disable test wiimote action
         self.app.forms['swiim'].actionTestWiimote.setEnabled(False)
-        # Set the test wiimote form as the central widget
-        self.app.forms['swiim'].setCentralWidget(wiimote_test)
+        # Set the test wiimote form as current stacked widget
+        self.app.forms['swiim'].stackedWidget.setCurrentWidget(wiimote_test)
 
     def onExit(self, *args, **kwargs):
         # Re-enable test wiimote action
