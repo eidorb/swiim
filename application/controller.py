@@ -23,13 +23,13 @@ class SwiimStateMachine(QtCore.QStateMachine):
 
     def create_states(self):
         """Create the states that make up the state machine."""
-        self.initial = Initial(self, self)
-        self.wiimote_test = WiimoteTest(self, self)
-
-        self.initial.setup_transitions()
-        self.wiimote_test.setup_transitions()
-
-        self.setInitialState(self.initial)
+        self.states = {
+            'initial': Initial(self, self),
+            'wiimote_test': WiimoteTest(self, self)
+        }
+        for state in self.states.itervalues():
+            state.setup_transitions()
+        self.setInitialState(self.states['initial'])
 
 class SwiimState(QState):
     """Sets up references to the state machine and app for convenience."""
@@ -49,7 +49,7 @@ class Initial(SwiimState):
             when wiimote test action triggered.
         """
         self.addTransition(self.app.forms['swiim'].actionTestWiimote.triggered,
-                           self.state_machine.wiimote_test)
+                           self.state_machine.states['wiimote_test'])
 
     def onEntry(self, event):
         log.debug('Initial state entered')
@@ -67,7 +67,7 @@ class WiimoteTest(SwiimState):
         """
 
         self.addTransition(self.app.forms['swiim'].actionHome.triggered,
-                           self.state_machine.initial)
+                           self.state_machine.states['initial'])
 
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
