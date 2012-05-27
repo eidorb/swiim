@@ -70,6 +70,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionTestWiimote"/>
+   <addaction name="actionHome"/>
   </widget>
   <action name="actionTestWiimote">
    <property name="text">
@@ -77,6 +78,14 @@
    </property>
    <property name="toolTip">
     <string>Test connection with the Wiimote</string>
+   </property>
+  </action>
+  <action name="actionHome">
+   <property name="text">
+    <string>&amp;Home</string>
+   </property>
+   <property name="toolTip">
+    <string>Go to the home screen</string>
    </property>
   </action>
  </widget>

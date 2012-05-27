@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'swiim.ui'
 #
-# Created: Sun May 27 00:54:06 2012
+# Created: Sun May 27 15:51:47 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.0.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,11 +41,14 @@ class Ui_swiimQMainWindow(object):
         swiimQMainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.actionTestWiimote = QtGui.QAction(swiimQMainWindow)
         self.actionTestWiimote.setObjectName("actionTestWiimote")
+        self.actionHome = QtGui.QAction(swiimQMainWindow)
+        self.actionHome.setObjectName("actionHome")
         self.menu_Tools.addAction(self.actionTestWiimote)
         self.menubar.addAction(self.menu_File.menuAction())
         self.menubar.addAction(self.menu_Tools.menuAction())
         self.menubar.addAction(self.menu_Help.menuAction())
         self.toolBar.addAction(self.actionTestWiimote)
+        self.toolBar.addAction(self.actionHome)
 
         self.retranslateUi(swiimQMainWindow)
         QtCore.QMetaObject.connectSlotsByName(swiimQMainWindow)
@@ -58,6 +61,8 @@ class Ui_swiimQMainWindow(object):
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("swiimQMainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTestWiimote.setText(QtGui.QApplication.translate("swiimQMainWindow", "Test &Wiimote", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTestWiimote.setToolTip(QtGui.QApplication.translate("swiimQMainWindow", "Test connection with the Wiimote", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHome.setText(QtGui.QApplication.translate("swiimQMainWindow", "&Home", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHome.setToolTip(QtGui.QApplication.translate("swiimQMainWindow", "Go to the home screen", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
