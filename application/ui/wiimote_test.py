@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'wiimote_test.ui'
 #
-# Created: Sat May 26 23:44:24 2012
+# Created: Sun May 27 17:17:06 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.0.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_wiimoteTestQWidget(object):
     def setupUi(self, wiimoteTestQWidget):
         wiimoteTestQWidget.setObjectName("wiimoteTestQWidget")
-        wiimoteTestQWidget.resize(405, 553)
+        wiimoteTestQWidget.setMinimumSize(QtCore.QSize(0, 553))
         self.horizontalLayout_4 = QtGui.QHBoxLayout(wiimoteTestQWidget)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.groupBoxLayout = QtGui.QVBoxLayout()
