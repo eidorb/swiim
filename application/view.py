@@ -22,15 +22,13 @@ class SwiimApplication(object):
         # swiim's stacked widget. Adding swiim to the forms dictionary after
         # this simplifies the process.
         swiim = SwiimWindow()
-        # Add a blank widget first. It is what will be displayed.
-        swiim.stackedWidget.addWidget(QtGui.QWidget())
         self.forms = {
+            'home': QtGui.QWidget(),
             'wiimote_test': WiimoteTestForm(),
         }
         for form in self.forms.itervalues():
             swiim.stackedWidget.addWidget(form)
         self.forms['swiim'] = swiim
-        log.debug('Showing swiim window')
         swiim.show()
 
     def set_permanent_message(self, message):

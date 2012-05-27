@@ -27,6 +27,7 @@ class SwiimStateMachine(QtCore.QStateMachine):
         self.wiimote_test = WiimoteTest(self, self)
 
         self.initial.setup_transitions()
+        self.wiimote_test.setup_transitions()
 
         self.setInitialState(self.initial)
 
@@ -42,14 +43,32 @@ class SwiimState(QState):
 
 class Initial(SwiimState):
     def setup_transitions(self):
-        self.addTransition(
-            self.app.forms['swiim'].actionTestWiimote.triggered,
-            self.state_machine.wiimote_test)
+        """Add initial state transitions.
+
+        To wiimote test state
+            when wiimote test action triggered.
+        """
+        self.addTransition(self.app.forms['swiim'].actionTestWiimote.triggered,
+                           self.state_machine.wiimote_test)
 
     def onEntry(self, event):
         log.debug('Initial state entered')
+        self.app.set_permanent_message('Home')
+        # Show the home form
+        self.app.forms['swiim'].stackedWidget.setCurrentWidget(
+            self.app.forms['home'])
 
 class WiimoteTest(SwiimState):
+    def setup_transitions(self):
+        """Add wiimote test state transitions.
+
+        To initial state
+            when home action triggered.
+        """
+
+        self.addTransition(self.app.forms['swiim'].actionHome.triggered,
+                           self.state_machine.initial)
+
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
         self.app.set_permanent_message('Wiimote connection test')
