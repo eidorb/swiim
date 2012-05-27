@@ -19,17 +19,18 @@ class SwiimStateMachine(QtCore.QStateMachine):
     def __init__(self, app):
         super(SwiimStateMachine, self).__init__()
         self.app = app
+        self.states = {}
         self.create_states()
+        self.setInitialState(self.states['initial'])
 
     def create_states(self):
         """Create the states that make up the state machine."""
-        self.states = {
-            'initial': Initial(self, self),
-            'wiimote_test': WiimoteTest(self, self)
-        }
+        self.states.update(
+            initial=Initial(self, self),
+            wiimote_test=WiimoteTest(self, self)
+        )
         for state in self.states.itervalues():
             state.setup_transitions()
-        self.setInitialState(self.states['initial'])
 
 class SwiimState(QState):
     """Sets up references to the state machine and app for convenience."""
@@ -59,6 +60,21 @@ class Initial(SwiimState):
             self.app.forms['home'])
 
 class WiimoteTest(SwiimState):
+    def __init__(self, parent, state_machine):
+        """Perform custom initialisation for the wiimote test state.
+
+        This state has two substates: disconnected and disconnected. These
+        states are created with this state as the parent. The disconnected state
+        is set as this state's initial state.
+
+        """
+        super(WiimoteTest, self).__init__(parent, state_machine)
+        state_machine.states.update(
+            wiimote_test_disconnected=WiimoteTestDisconnected(self, state_machine),
+            wiimote_test_connected=WiimoteTestConnected(self, state_machine)
+        )
+        self.setInitialState(state_machine.states['wiimote_test_disconnected'])
+
     def setup_transitions(self):
         """Add wiimote test state transitions.
 
@@ -71,7 +87,6 @@ class WiimoteTest(SwiimState):
 
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
-        self.app.set_permanent_message('Wiimote connection test')
         wiimote_test = self.app.forms['wiimote_test']
         # Hide button highlights
         for highlight in wiimote_test.button_highlights_map.itervalues():
@@ -96,9 +111,20 @@ class WiimoteTest(SwiimState):
         # Re-enable test wiimote action
         self.app.forms['swiim'].actionTestWiimote.setEnabled(True)
 
-class Disconnected(SwiimState):
+class WiimoteTestDisconnected(SwiimState):
     def onEntry(self, event):
-        log.debug('Disconnected state entered')
+        log.debug('Wiimote test disconnected state entered')
+        self.app.set_permanent_message(
+            'Wiimote connection test: disconnected from wiimote')
 
     def onExit(self, event):
-        log.debug('Disconnected state exited')
+        log.debug('Wiimote test disconnected state exited')
+
+class WiimoteTestConnected(SwiimState):
+    def onEntry(self, event):
+        log.debug('Wiimote test connected state entered')
+        self.app.set_permanent_message(
+            'Wiimote connection test: connected to wiimote')
+
+    def onExit(self, event):
+        log.debug('Wiimote test connected state exited')
