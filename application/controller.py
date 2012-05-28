@@ -88,22 +88,11 @@ class WiimoteTest(SwiimState):
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
         wiimote_test = self.app.forms['wiimote_test']
-        # Hide button highlights
-        for highlight in wiimote_test.button_highlights_map.itervalues():
-            highlight.hide()
-        # Hide LED highlights
-        for highlight in wiimote_test.led_highlights_map.itervalues():
-            highlight.hide()
-        # Set battery level to 0
-        wiimote_test.statusBattery.setValue(0)
-        # Disable disconnect button
-        wiimote_test.connect.setEnabled(True)
-        wiimote_test.disconnect.setEnabled(False)
-        # Disable Wiimote control and status group boxes
-        wiimote_test.controlGroup.setEnabled(False)
-        wiimote_test.statusGroup.setEnabled(False)
         # Disable test wiimote action
         self.app.forms['swiim'].actionTestWiimote.setEnabled(False)
+        # Disable the connection controls
+        wiimote_test.connect.setEnabled(False)
+        wiimote_test.disconnect.setEnabled(False)
         # Set the test wiimote form as current stacked widget
         self.app.forms['swiim'].stackedWidget.setCurrentWidget(wiimote_test)
 
@@ -113,18 +102,44 @@ class WiimoteTest(SwiimState):
 
 class WiimoteTestDisconnected(SwiimState):
     def onEntry(self, event):
+        """Set up the wiimote test form for the disconnected state.
+
+        Hide all the wiimote image overlays indicating status. Enable the
+        connect button. Disable the control and status group.
+        """
         log.debug('Wiimote test disconnected state entered')
         self.app.set_permanent_message(
             'Wiimote connection test: disconnected from wiimote')
+        wiimote_test = self.app.forms['wiimote_test']
+        # Hide button highlights
+        for highlight in wiimote_test.button_highlights_map.itervalues():
+            highlight.hide()
+        # Hide LED highlights
+        for highlight in wiimote_test.led_highlights_map.itervalues():
+            highlight.hide()
+        # Set battery level to 0
+        wiimote_test.statusBattery.setValue(0)
+        # Enable connect button
+        wiimote_test.connect.setEnabled(True)
+        # Disable Wiimote control and status group boxes
+        wiimote_test.controlGroup.setEnabled(False)
+        wiimote_test.statusGroup.setEnabled(False)
 
     def onExit(self, event):
         log.debug('Wiimote test disconnected state exited')
+        # Disable the connect button
+        self.app.forms['wiimote_test'].connect.setEnabled(False)
 
 class WiimoteTestConnected(SwiimState):
     def onEntry(self, event):
         log.debug('Wiimote test connected state entered')
         self.app.set_permanent_message(
             'Wiimote connection test: connected to wiimote')
+        wiimote_test = self.app.forms['wiimote_test']
+        # Enable connect button
+        wiimote_test.connect.setEnabled(True)
 
     def onExit(self, event):
         log.debug('Wiimote test connected state exited')
+        # Disable the disconnect button
+        self.app.forms['wiimote_test'].disconnect.setEnabled(False)
