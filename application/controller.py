@@ -48,6 +48,7 @@ class Initial(SwiimState):
 
         To wiimote test state
             when wiimote test action triggered.
+
         """
         self.addTransition(self.app.forms['swiim'].actionTestWiimote.triggered,
                            self.state_machine.states['wiimote_test'])
@@ -70,18 +71,22 @@ class WiimoteTest(SwiimState):
         """
         super(WiimoteTest, self).__init__(parent, state_machine)
         state_machine.states.update(
-            wiimote_test_disconnected=WiimoteTestDisconnected(self, state_machine),
-            wiimote_test_connected=WiimoteTestConnected(self, state_machine)
-        )
+            wiimote_test_disconnected=WiimoteTestDisconnected(
+                self, state_machine),
+            wiimote_test_connected=WiimoteTestConnected(
+                self, state_machine))
         self.setInitialState(state_machine.states['wiimote_test_disconnected'])
+        self.app.forms['wiimote_test'].connect.clicked.connect(
+            self.state_machine
+                .states['wiimote_test_disconnected'].attempt_connection)
 
     def setup_transitions(self):
         """Add wiimote test state transitions.
 
         To initial state
             when home action triggered.
-        """
 
+        """
         self.addTransition(self.app.forms['swiim'].actionHome.triggered,
                            self.state_machine.states['initial'])
 
@@ -101,11 +106,29 @@ class WiimoteTest(SwiimState):
         self.app.forms['swiim'].actionTestWiimote.setEnabled(True)
 
 class WiimoteTestDisconnected(SwiimState):
+    connection_attempt_successful = QtCore.Signal()
+    connection_attempt_unsuccessful = QtCore.Signal()
+
+    def setup_transitions(self):
+        """Add wiimote test disconnected state transitions.
+
+        To wiimote test connected state
+            when connection attempt successful.
+        Self transition
+            when connection attempt unsuccessful.
+
+        """
+        self.addTransition(self.connection_attempt_successful,
+                           self.state_machine.states['wiimote_test_connected'])
+        self.addTransition(self.connection_attempt_unsuccessful,
+                           self)
+
     def onEntry(self, event):
         """Set up the wiimote test form for the disconnected state.
 
         Hide all the wiimote image overlays indicating status. Enable the
         connect button. Disable the control and status group.
+
         """
         log.debug('Wiimote test disconnected state entered')
         self.app.set_permanent_message(
@@ -128,6 +151,11 @@ class WiimoteTestDisconnected(SwiimState):
     def onExit(self, event):
         log.debug('Wiimote test disconnected state exited')
         # Disable the connect button
+        self.app.forms['wiimote_test'].connect.setEnabled(False)
+
+    def attempt_connection(self):
+        """Attempt to establish a connection to a wiimote."""
+        # Disable the connect button while attempting connection.
         self.app.forms['wiimote_test'].connect.setEnabled(False)
 
 class WiimoteTestConnected(SwiimState):
