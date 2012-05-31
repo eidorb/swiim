@@ -60,6 +60,9 @@ class Initial(SwiimState):
         self.app.forms['swiim'].stackedWidget.setCurrentWidget(
             self.app.forms['home'])
 
+    def onExit(self, event):
+        log.debug('Initial state exited')
+
 class WiimoteTest(SwiimState):
     def __init__(self, parent, state_machine):
         """Perform custom initialisation for the wiimote test state.
@@ -101,7 +104,8 @@ class WiimoteTest(SwiimState):
         # Set the test wiimote form as current stacked widget
         self.app.forms['swiim'].stackedWidget.setCurrentWidget(wiimote_test)
 
-    def onExit(self, *args, **kwargs):
+    def onExit(self, event):
+        log.debug('Wiimote test state exited')
         # Re-enable test wiimote action
         self.app.forms['swiim'].actionTestWiimote.setEnabled(True)
 
