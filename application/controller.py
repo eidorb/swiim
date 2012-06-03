@@ -162,6 +162,11 @@ class WiimoteTestDisconnected(SwiimState):
         # Disable the connect button while attempting connection.
         self.app.forms['wiimote_test'].connect.setEnabled(False)
 
+        # Connection attempt unsuccessful
+        log.debug('Connection attempt unsuccessful')
+        self.connection_attempt_unsuccessful.emit()
+        self.app.display_temporary_message('Connection attempt unsuccessful')
+
 class WiimoteTestConnected(SwiimState):
     def onEntry(self, event):
         log.debug('Wiimote test connected state entered')
