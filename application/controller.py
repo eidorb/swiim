@@ -55,7 +55,7 @@ class Initial(SwiimState):
 
     def onEntry(self, event):
         log.debug('Initial state entered')
-        self.app.set_permanent_message('Home')
+        self.app.display_permanent_message('Home')
         # Show the home form
         self.app.forms['swiim'].stackedWidget.setCurrentWidget(
             self.app.forms['home'])
@@ -135,7 +135,7 @@ class WiimoteTestDisconnected(SwiimState):
 
         """
         log.debug('Wiimote test disconnected state entered')
-        self.app.set_permanent_message(
+        self.app.display_permanent_message(
             'Wiimote connection test: disconnected from wiimote')
         wiimote_test = self.app.forms['wiimote_test']
         # Hide button highlights
@@ -165,11 +165,11 @@ class WiimoteTestDisconnected(SwiimState):
 class WiimoteTestConnected(SwiimState):
     def onEntry(self, event):
         log.debug('Wiimote test connected state entered')
-        self.app.set_permanent_message(
+        self.app.display_permanent_message(
             'Wiimote connection test: connected to wiimote')
         wiimote_test = self.app.forms['wiimote_test']
-        # Enable connect button
-        wiimote_test.connect.setEnabled(True)
+        # Enable disconnect button
+        wiimote_test.disconnect.setEnabled(True)
 
     def onExit(self, event):
         log.debug('Wiimote test connected state exited')

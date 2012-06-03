@@ -31,11 +31,11 @@ class SwiimApplication(object):
         self.forms['swiim'] = swiim
         swiim.show()
 
-    def set_permanent_message(self, message):
+    def display_permanent_message(self, message):
         """Set the permanent status bar message to `message`"""
         self.forms['swiim'].permanent_message.setText(message)
 
-    def show_temporary_message(self, message):
+    def display_temporary_message(self, message):
         """Show `message` in the status bar temporarily"""
         self.forms['swiim'].statusbar.showMessage(message, 1000)
 
