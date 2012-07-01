@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/button_highlight.png</file>
+    <file>images/led_highlight.png</file>
+    <file>images/wiimote.png</file>
+  </qresource>
+  <qresource prefix="forms">
+    <file>swiim.ui</file>
+    <file>wiimote_test.ui</file>
+  </qresource>
+</RCC>
