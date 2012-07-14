@@ -2,7 +2,7 @@ from PySide import QtCore
 import logging
 from PySide.QtCore import QState
 import view
-import wiiuse
+from wiiuse import wiiuse
 
 log = logging.getLogger('swiim.' + __name__)
 
