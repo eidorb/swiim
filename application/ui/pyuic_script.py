@@ -1,41 +1,37 @@
 import argparse
-import glob
 import os
+import pysideuic
 
 def parse_arguments():
-    """Parse command line arguments and return the path to pyuic."""
+    """Parse command line arguments and return the path to the ui directory."""
+    def directory(path):
+        if os.path.isdir(path):
+            return path
+        else:
+            raise argparse.ArgumentTypeError(
+                '{} is not a directory'.format(path))
     parser = argparse.ArgumentParser(
-        description='Convert modified Qt Designer ui files using pyuic.')
-    parser.add_argument('pyuic_path', type=str)
+        description= 'Convert Qt Designer ui files to Python modules.')
+    parser.add_argument(
+        'dir',
+        nargs='?',
+        default=os.getcwd(),
+        type=directory,
+        help='directory containing ui files (default: current directory)')
     args = parser.parse_args()
-    return args.pyuic_path
-
-def modified_ui_files():
-    """Return (ui, py) filename pairs for ui files that have been modified or
-    newly created.
-
-    """
-    os.chdir(os.path.dirname(__file__))
-    for ui_file in glob.iglob('*.ui'):
-        py_file = os.path.splitext(ui_file)[0] + '.py'
-        try:
-            ui_file_mtime = os.path.getmtime(ui_file)
-            py_file_mtime = os.path.getmtime(py_file)
-            if ui_file_mtime > py_file_mtime:
-                # A py file will need to be generated if the ui file has been
-                # modified.
-                yield ui_file, py_file
-        except os.error:
-            # If the py file doesn't exist, it will need to be generated.
-            yield ui_file, py_file
+    return args.dir
 
 def main():
-    pyuic_path = parse_arguments()
-    for ui_file, py_file in modified_ui_files():
-        pyuic_command = ' '.join(
-            (pyuic_path, '-x', '--output=' + py_file, ui_file))
-        print 'Generating', py_file, 'from', ui_file
-        os.system(pyuic_command)
+    dir = parse_arguments()
+    class bogus_string(str):
+        """A string subclass with the string formatting operator overridden."""
+        def __mod__(*args):
+            """Instead of formatting, an empty string is returned."""
+            return ''
+    # Replace pysideuic's _header so that a header isn't created in the
+    # generated Python module.
+    pysideuic._header = bogus_string()
+    pysideuic.compileUiDir(dir)
 
 if __name__ == '__main__':
     main()
