@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'wiimote_test.ui'
-#
-# Created: Mon May 28 19:11:03 2012
-#      by: pyside-uic 0.2.13 running on PySide 1.0.7
-#
-# WARNING! All changes made in this file will be lost!
-
 from PySide import QtCore, QtGui
 
 class Ui_wiimoteTestQWidget(object):
@@ -194,14 +185,4 @@ class Ui_wiimoteTestQWidget(object):
         self.disconnect.setText(QtGui.QApplication.translate("wiimoteTestQWidget", "Disconnect", None, QtGui.QApplication.UnicodeUTF8))
         self.controlGroup.setTitle(QtGui.QApplication.translate("wiimoteTestQWidget", "Wiimote Control", None, QtGui.QApplication.UnicodeUTF8))
         self.statusGroup.setTitle(QtGui.QApplication.translate("wiimoteTestQWidget", "Wiimote Status", None, QtGui.QApplication.UnicodeUTF8))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    wiimoteTestQWidget = QtGui.QWidget()
-    ui = Ui_wiimoteTestQWidget()
-    ui.setupUi(wiimoteTestQWidget)
-    wiimoteTestQWidget.show()
-    sys.exit(app.exec_())
 

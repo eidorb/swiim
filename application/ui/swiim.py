@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'swiim.ui'
-#
-# Created: Sun May 27 15:51:47 2012
-#      by: pyside-uic 0.2.13 running on PySide 1.0.7
-#
-# WARNING! All changes made in this file will be lost!
-
 from PySide import QtCore, QtGui
 
 class Ui_swiimQMainWindow(object):
@@ -22,8 +13,8 @@ class Ui_swiimQMainWindow(object):
         self.stackedWidget.setObjectName("stackedWidget")
         self.horizontalLayout.addWidget(self.stackedWidget)
         swiimQMainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(swiimQMainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar = QtGui.QMenuBar()
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         self.menu_Tools = QtGui.QMenu(self.menubar)
         self.menu_Tools.setObjectName("menu_Tools")
@@ -63,14 +54,4 @@ class Ui_swiimQMainWindow(object):
         self.actionTestWiimote.setToolTip(QtGui.QApplication.translate("swiimQMainWindow", "Test connection with the Wiimote", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHome.setText(QtGui.QApplication.translate("swiimQMainWindow", "&Home", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHome.setToolTip(QtGui.QApplication.translate("swiimQMainWindow", "Go to the home screen", None, QtGui.QApplication.UnicodeUTF8))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    swiimQMainWindow = QtGui.QMainWindow()
-    ui = Ui_swiimQMainWindow()
-    ui.setupUi(swiimQMainWindow)
-    swiimQMainWindow.show()
-    sys.exit(app.exec_())
 
