@@ -1,6 +1,5 @@
-from PySide import QtCore
 import logging
-from PySide.QtCore import QState
+from PySide import QtCore
 import view
 from wiiuse import wiiuse
 
@@ -33,7 +32,7 @@ class SwiimStateMachine(QtCore.QStateMachine):
         for state in self.states.itervalues():
             state.setup_transitions()
 
-class SwiimState(QState):
+class SwiimState(QtCore.QState):
     """Sets up references to the state machine and app for convenience."""
     def __init__(self, parent, state_machine):
         super(SwiimState, self).__init__(parent)

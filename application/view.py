@@ -1,6 +1,6 @@
 import logging
-from PySide import QtGui
 import os
+from PySide import QtGui
 from forms import SwiimWindow, WiimoteTestForm
 
 log = logging.getLogger('swiim.' + __name__)

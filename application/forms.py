@@ -1,5 +1,5 @@
-from ui import swiim, wiimote_test
 from PySide import QtGui
+from ui import swiim, wiimote_test
 from wiiuse import wiiuse
 
 class SwiimWindow(QtGui.QMainWindow, swiim.Ui_swiimQMainWindow):
