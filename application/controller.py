@@ -50,7 +50,7 @@ class Initial(SwiimState):
             when wiimote test action triggered.
 
         """
-        self.addTransition(self.app.forms['swiim'].actionTestWiimote.triggered,
+        self.addTransition(self.app.forms['swiim'].testWiimoteAction.triggered,
                            self.state_machine.states['wiimote_test'])
 
     def onEntry(self, event):
@@ -90,14 +90,14 @@ class WiimoteTest(SwiimState):
             when home action triggered.
 
         """
-        self.addTransition(self.app.forms['swiim'].actionHome.triggered,
+        self.addTransition(self.app.forms['swiim'].homeAction.triggered,
                            self.state_machine.states['initial'])
 
     def onEntry(self, event):
         log.debug('Test Wiimote state entered')
         wiimote_test = self.app.forms['wiimote_test']
         # Disable test wiimote action
-        self.app.forms['swiim'].actionTestWiimote.setEnabled(False)
+        self.app.forms['swiim'].testWiimoteAction.setEnabled(False)
         # Disable the connection controls
         wiimote_test.connectButton.setEnabled(False)
         wiimote_test.disconnectButton.setEnabled(False)
@@ -107,7 +107,7 @@ class WiimoteTest(SwiimState):
     def onExit(self, event):
         log.debug('Wiimote test state exited')
         # Re-enable test wiimote action
-        self.app.forms['swiim'].actionTestWiimote.setEnabled(True)
+        self.app.forms['swiim'].testWiimoteAction.setEnabled(True)
 
 class WiimoteTestDisconnected(SwiimState):
     connection_attempt_successful = QtCore.Signal()
