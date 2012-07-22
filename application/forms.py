@@ -43,8 +43,8 @@ class WiimoteTestForm(QtGui.QWidget, wiimote_test.Ui_wiimoteTestQWidget):
         }
         # Map from LED control widgets to wiiuse button values
         self.led_controls_map = {
-            self.controlLed1: wiiuse.WIIMOTE_LED_1,
-            self.controlLed2: wiiuse.WIIMOTE_LED_2,
-            self.controlLed3: wiiuse.WIIMOTE_LED_3,
-            self.controlLed4: wiiuse.WIIMOTE_LED_4
+            self.led1Button: wiiuse.WIIMOTE_LED_1,
+            self.led2Button: wiiuse.WIIMOTE_LED_2,
+            self.led3Button: wiiuse.WIIMOTE_LED_3,
+            self.led4Button: wiiuse.WIIMOTE_LED_4
         }

@@ -20,14 +20,14 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="connect">
+         <widget class="QPushButton" name="connectButton">
           <property name="text">
            <string>Connect</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="disconnect">
+         <widget class="QPushButton" name="disconnectButton">
           <property name="text">
            <string>Disconnect</string>
           </property>
@@ -46,7 +46,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QPushButton" name="controlRumble">
+         <widget class="QPushButton" name="toggleRumbleButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -68,7 +68,7 @@
         <item>
          <layout class="QHBoxLayout" name="_2">
           <item>
-           <widget class="QCheckBox" name="controlLed1">
+           <widget class="QCheckBox" name="led1Button">
             <property name="text">
              <string/>
             </property>
@@ -78,21 +78,21 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="controlLed2">
+           <widget class="QCheckBox" name="led2Button">
             <property name="text">
              <string/>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="controlLed3">
+           <widget class="QCheckBox" name="led3Button">
             <property name="text">
              <string/>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="controlLed4">
+           <widget class="QCheckBox" name="led4Button">
             <property name="text">
              <string/>
             </property>
@@ -143,7 +143,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QWidget" name="wiimoteImageHolder" native="true">
+         <widget class="QWidget" name="wiimoteImageContainer" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -428,7 +428,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QProgressBar" name="statusBattery">
+         <widget class="QProgressBar" name="batteryProgressBar">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>

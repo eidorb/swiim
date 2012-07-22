@@ -79,7 +79,7 @@ class WiimoteTest(SwiimState):
             wiimote_test_connected=WiimoteTestConnected(
                 self, state_machine))
         self.setInitialState(state_machine.states['wiimote_test_disconnected'])
-        self.app.forms['wiimote_test'].connect.clicked.connect(
+        self.app.forms['wiimote_test'].connectButton.clicked.connect(
             self.state_machine
                 .states['wiimote_test_disconnected'].attempt_connection)
 
@@ -99,8 +99,8 @@ class WiimoteTest(SwiimState):
         # Disable test wiimote action
         self.app.forms['swiim'].actionTestWiimote.setEnabled(False)
         # Disable the connection controls
-        wiimote_test.connect.setEnabled(False)
-        wiimote_test.disconnect.setEnabled(False)
+        wiimote_test.connectButton.setEnabled(False)
+        wiimote_test.disconnectButton.setEnabled(False)
         # Set the test wiimote form as current stacked widget
         self.app.forms['swiim'].stackedWidget.setCurrentWidget(wiimote_test)
 
@@ -145,9 +145,9 @@ class WiimoteTestDisconnected(SwiimState):
         for highlight in wiimote_test.led_highlights_map.itervalues():
             highlight.hide()
         # Set battery level to 0
-        wiimote_test.statusBattery.setValue(0)
+        wiimote_test.batteryProgressBar.setValue(0)
         # Enable connect button
-        wiimote_test.connect.setEnabled(True)
+        wiimote_test.connectButton.setEnabled(True)
         # Disable Wiimote control, status and plot group boxes
         wiimote_test.controlGroupBox.setEnabled(False)
         wiimote_test.statusGroupBox.setEnabled(False)
@@ -156,12 +156,12 @@ class WiimoteTestDisconnected(SwiimState):
     def onExit(self, event):
         log.debug('Wiimote test disconnected state exited')
         # Disable the connect button
-        self.app.forms['wiimote_test'].connect.setEnabled(False)
+        self.app.forms['wiimote_test'].connectButton.setEnabled(False)
 
     def attempt_connection(self):
         """Attempt to establish a connection to a wiimote."""
         # Disable the connect button while attempting connection.
-        self.app.forms['wiimote_test'].connect.setEnabled(False)
+        self.app.forms['wiimote_test'].connectButton.setEnabled(False)
 
         self.app.wiimote_connection = wiiuse.WiimoteConnection()
         if self.app.wiimote_connection.connect():
@@ -182,9 +182,9 @@ class WiimoteTestConnected(SwiimState):
             'Wiimote connection test: connected to wiimote')
         wiimote_test = self.app.forms['wiimote_test']
         # Enable disconnect button
-        wiimote_test.disconnect.setEnabled(True)
+        wiimote_test.disconnectButton.setEnabled(True)
 
     def onExit(self, event):
         log.debug('Wiimote test connected state exited')
         # Disable the disconnect button
-        self.app.forms['wiimote_test'].disconnect.setEnabled(False)
+        self.app.forms['wiimote_test'].disconnectButton.setEnabled(False)
