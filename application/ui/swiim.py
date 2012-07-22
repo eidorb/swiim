@@ -3,8 +3,7 @@ from PySide import QtCore, QtGui
 class Ui_swiimQMainWindow(object):
     def setupUi(self, swiimQMainWindow):
         swiimQMainWindow.setObjectName("swiimQMainWindow")
-        swiimQMainWindow.resize(800, 600)
-        swiimQMainWindow.setMinimumSize(QtCore.QSize(600, 600))
+        swiimQMainWindow.resize(300, 300)
         self.centralwidget = QtGui.QWidget(swiimQMainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -14,7 +13,7 @@ class Ui_swiimQMainWindow(object):
         self.horizontalLayout.addWidget(self.stackedWidget)
         swiimQMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar()
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 300, 22))
         self.menubar.setObjectName("menubar")
         self.menu_Tools = QtGui.QMenu(self.menubar)
         self.menu_Tools.setObjectName("menu_Tools")
