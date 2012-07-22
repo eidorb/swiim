@@ -1,4 +1,5 @@
 from PySide import QtGui
+from matplotlibwidget import MatplotlibWidget
 from ui import swiim, wiimote_test
 from wiiuse import wiiuse
 
@@ -16,6 +17,9 @@ class WiimoteTestForm(QtGui.QWidget, wiimote_test.Ui_wiimoteTestQWidget):
     def __init__(self, parent=None):
         super(WiimoteTestForm, self).__init__(parent)
         self.setupUi(self)
+        # Add plot widget
+        self.plot = MatplotlibWidget(self.plotGroupBox)
+        self.plotVerticalLayout.addWidget(self.plot)
         # Map from wiiuse button values to button highlight widgets
         self.button_highlights_map = {
             wiiuse.WIIMOTE_BUTTON_TWO: self.btn2,

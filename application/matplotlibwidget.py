@@ -13,11 +13,13 @@ class MatplotlibWidget(FigureCanvasQTAgg):
     plot exposes the figure's axes' plot function.
 
     """
-    def __init__(self):
+    def __init__(self, parent):
         self.figure = Figure()
         super(MatplotlibWidget, self).__init__(self.figure)
+        self.setParent(parent)
         self.axes = self.figure.add_subplot(1,1,1)
 
     def plot(self, *args, **kwargs):
         self.axes.plot(*args, **kwargs)
+        self.draw()
 
