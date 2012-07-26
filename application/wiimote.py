@@ -1,5 +1,5 @@
 import logging
-from wiiuse.wiiuse import connect, find, init, poll
+from wiiuse.wiiuse import connect, disconnect, find, init, poll, toggle_rumble
 
 log = logging.getLogger('swiim.' + __name__)
 
@@ -24,7 +24,15 @@ class WiimoteConnection(object):
                 return self.connected
         log.warning('Could not connect to any wiimotes')
 
+    def disconnect(self):
+        if self.connected:
+            disconnect(self.wiimote)
+
     def poll(self):
         if poll(self.wiimotes, 1):
             device = self.wiimote.contents
             return device
+
+    def toggle_rumble(self):
+        log.debug('Toggling rumble')
+        toggle_rumble(self.wiimote)

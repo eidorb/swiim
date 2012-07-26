@@ -199,5 +199,6 @@ class WiimoteTestConnected(SwiimState):
 
     def onExit(self, event):
         log.debug('Wiimote test connected state exited')
+        self.app.wiimote_connection.disconnect()
         # Disable the disconnect button
         self.app.forms['wiimote_test'].disconnectButton.setEnabled(False)
