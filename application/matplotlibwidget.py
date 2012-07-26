@@ -18,6 +18,7 @@ class MatplotlibWidget(FigureCanvasQTAgg):
         super(MatplotlibWidget, self).__init__(self.figure)
         self.setParent(parent)
         self.axes = self.figure.add_subplot(1,1,1)
+        self.figure.patch.set_alpha(0)
 
     def plot(self, *args, **kwargs):
         self.axes.plot(*args, **kwargs)
