@@ -1,7 +1,7 @@
 import logging
 from PySide import QtCore
 import view
-from wiiuse import wiiuse
+from wiimote import WiimoteConnection
 
 log = logging.getLogger('swiim.' + __name__)
 
@@ -164,7 +164,7 @@ class WiimoteTestDisconnected(SwiimState):
         # Disable the connect button while attempting connection.
         self.app.forms['wiimote_test'].connectButton.setEnabled(False)
 
-        self.app.wiimote_connection = wiiuse.WiimoteConnection()
+        self.app.wiimote_connection = WiimoteConnection()
         if self.app.wiimote_connection.connect():
             # Connection attempt successful
             log.debug('Connection attempt successful')
@@ -199,6 +199,7 @@ class WiimoteTestConnected(SwiimState):
         wiimote_test.controlGroupBox.setEnabled(True)
         wiimote_test.statusGroupBox.setEnabled(True)
         wiimote_test.plotGroupBox.setEnabled(True)
+
 
     def onExit(self, event):
         log.debug('Wiimote test connected state exited')

@@ -383,23 +383,6 @@ set_aspect_ratio = dll.wiiuse_set_aspect_ratio
 set_aspect_ratio.argtypes = (wiimote_p, c_int)
 set_aspect_ratio.restype = None
 
-TIMEOUT_SECONDS = 5
-
-class WiimoteConnection(object):
-    def __init__(self):
-        self.wiimotes = init(1)
-        self.wiimote = self.wiimotes.contents
-
-    def connect(self):
-        return find(self.wiimotes, 1, TIMEOUT_SECONDS)
-
-    def poll(self):
-        if poll(self.wiimotes, 1):
-            device = self.wiimote.contents
-            return device
-
-
-
 class Wiimote(object):
     def __init__(self, controller):
         self.wiimotes = init(1)
