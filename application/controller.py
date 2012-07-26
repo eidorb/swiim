@@ -94,14 +94,14 @@ class WiimoteTest(SwiimState):
                            self.state_machine.states['initial'])
 
     def onEntry(self, event):
-        log.debug('Test Wiimote state entered')
+        log.debug('Wiimote test state entered')
         wiimote_test = self.app.forms['wiimote_test']
         # Disable test wiimote action
         self.app.forms['swiim'].testWiimoteAction.setEnabled(False)
         # Disable the connection controls
         wiimote_test.connectButton.setEnabled(False)
         wiimote_test.disconnectButton.setEnabled(False)
-        # Set the test wiimote form as current stacked widget
+        # Set the wiimote test form as current stacked widget
         self.app.forms['swiim'].stackedWidget.setCurrentWidget(wiimote_test)
 
     def onExit(self, event):
@@ -135,8 +135,7 @@ class WiimoteTestDisconnected(SwiimState):
 
         """
         log.debug('Wiimote test disconnected state entered')
-        self.app.display_permanent_message(
-            'Wiimote connection test: disconnected from wiimote')
+        self.app.display_permanent_message('Wiimote test: disconnected')
         wiimote_test = self.app.forms['wiimote_test']
         # Hide button highlights
         for highlight in wiimote_test.button_highlights_map.itervalues():
@@ -180,8 +179,7 @@ class WiimoteTestDisconnected(SwiimState):
 class WiimoteTestConnected(SwiimState):
     def onEntry(self, event):
         log.debug('Wiimote test connected state entered')
-        self.app.display_permanent_message(
-            'Wiimote connection test: connected to wiimote')
+        self.app.display_permanent_message('Wiimote test: connected')
         wiimote_test = self.app.forms['wiimote_test']
         # Enable disconnect button
         wiimote_test.disconnectButton.setEnabled(True)
