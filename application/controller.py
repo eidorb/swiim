@@ -183,6 +183,10 @@ class WiimoteTestConnected(SwiimState):
         wiimote_test = self.app.forms['wiimote_test']
         # Enable disconnect button
         wiimote_test.disconnectButton.setEnabled(True)
+        # Enable Wiimote control, status and plot group boxes
+        wiimote_test.controlGroupBox.setEnabled(True)
+        wiimote_test.statusGroupBox.setEnabled(True)
+        wiimote_test.plotGroupBox.setEnabled(True)
 
     def onExit(self, event):
         log.debug('Wiimote test connected state exited')
