@@ -177,6 +177,18 @@ class WiimoteTestDisconnected(SwiimState):
             self.connection_attempt_unsuccessful.emit()
 
 class WiimoteTestConnected(SwiimState):
+    def setup_transitions(self):
+        """
+        Add wiimote test connected state transitions.
+
+        To wiimote test disconnected state
+            when disconnect button pressed or on connection error.
+
+        """
+        self.addTransition(
+            self.app.forms['wiimote_test'].disconnectButton.clicked,
+            self.state_machine.states['wiimote_test_disconnected'])
+
     def onEntry(self, event):
         log.debug('Wiimote test connected state entered')
         self.app.display_permanent_message('Wiimote test: connected')
