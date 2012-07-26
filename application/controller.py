@@ -163,17 +163,13 @@ class WiimoteTestDisconnected(SwiimState):
         self.app.display_temporary_message('Attempting connection')
         # Disable the connect button while attempting connection.
         self.app.forms['wiimote_test'].connectButton.setEnabled(False)
-
         self.app.wiimote_connection = WiimoteConnection()
         if self.app.wiimote_connection.connect():
-            # Connection attempt successful
-            log.debug('Connection attempt successful')
             self.app.display_temporary_message('Connection attempt successful')
             self.connection_attempt_successful.emit()
         else:
-            # Connection attempt unsuccessful
-            log.debug('Connection attempt unsuccessful')
             self.app.display_temporary_message('Connection attempt unsuccessful')
+            del self.app.wiimote_connection
             self.connection_attempt_unsuccessful.emit()
 
 class WiimoteTestConnected(SwiimState):
