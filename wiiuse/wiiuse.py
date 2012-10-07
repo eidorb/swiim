@@ -8,6 +8,7 @@ import sys
 import time
 
 
+LIB_DIR = os.path.dirname(__file__)
 # Led bit masks.
 WIIMOTE_LED_NONE = 0x00
 WIIMOTE_LED_1 = 0x10
@@ -111,7 +112,40 @@ WIIUSE_GUITAR_HERO_3_CTRL_INSERTED = 11
 WIIUSE_GUITAR_HERO_3_CTRL_REMOVED = 12
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
+
+# The name of the wiiuse library and part of the wiimote structure is
+# OS-dependent.
+platform = sys.platform
+if platform.startswith('linux'):
+    lib_path = os.path.join(LIB_DIR, 'libwiiuse.so')
+    os_dependent = [('bdaddr', c_void_p), # FIXME: c_void_p is not correct.
+                    ('out_sock', c_int),
+                    ('in_sock', c_int),
+                    ('bdaddr_str', c_char * 18)]
+elif platform.startswith('win32'):
+    lib_path = os.path.join(LIB_DIR, 'wiiuse.dll')
+    os_dependent = [('dev_handle', c_void_p),
+                    ('hid_overlap', c_void_p * 5),
+                    ('stack', c_int),
+                    ('timeout', c_int),
+                    ('normal_timeout', c_ubyte),
+                    ('exp_timeout', c_ubyte)]
+elif platform.startswith('darwin'):
+    lib_path = os.path.join(LIB_DIR, 'libwiiuse.dylib')
+    os_dependent = [('device', c_void_p),
+                    ('address', c_void_p),
+                    ('inputCh', c_void_p),
+                    ('outputCh', c_void_p),
+                    ('disconnectionRef', c_void_p),
+                    ('connectionHandler', c_void_p),
+                    ('bdaddr_str', c_char * 18)]
+else:
+    raise RuntimeError('This platform ({}) is not supported.'.format(platform))
+# Load the wiiuse library.
+logger.info('Using wiiuse library "%s"', lib_path)
+lib = ctypes.cdll.LoadLibrary(lib_path)
 
 
 # Wiiuse data structures.
@@ -249,29 +283,6 @@ class wiimote_state(Structure):
                 ('accel', vec3b)]
 
 
-# The wiimote structure is OS-dependent.
-if sys.platform.startswith('linux'):
-    os_dependent = [('bdaddr', c_void_p), # FIXME: c_void_p is not correct.
-                    ('out_sock', c_int),
-                    ('in_sock', c_int),
-                    ('bdaddr_str', c_char * 18)]
-elif sys.platform.startswith('win32'):
-    os_dependent = [('dev_handle', c_void_p),
-                    ('hid_overlap', c_void_p * 5),
-                    ('stack', c_int),
-                    ('timeout', c_int),
-                    ('normal_timeout', c_ubyte),
-                    ('exp_timeout', c_ubyte)]
-elif sys.platform.startswith('darwin'):
-    os_dependent = [('device', c_void_p),
-                    ('address', c_void_p),
-                    ('inputCh', c_void_p),
-                    ('outputCh', c_void_p),
-                    ('disconnectionRef', c_void_p),
-                    ('connectionHandler', c_void_p),
-                    ('bdaddr_str', c_char * 18)]
-
-
 class wiimote(Structure):
     _fields_ = [('unid', c_int),] + os_dependent + \
                [('state', c_int),
@@ -339,18 +350,6 @@ def using_speaker(wm):
 
 def is_led_set(dev, led):
     return dev.leds & led
-
-
-# Load the wiiuse library.
-LIB_DIR = os.path.dirname(__file__)
-if sys.platform.startswith('linux'):
-    lib_path = os.path.join(LIB_DIR, 'libwiiuse.so')
-elif sys.platform.startswith('win32'):
-    lib_path = os.path.join(LIB_DIR, 'wiiuse.dll')
-elif sys.platform.startswith('darwin'):
-    lib_path = os.path.join(LIB_DIR, 'libwiiuse.dylib')
-log.info('Using wiiuse library "%s"', lib_path)
-lib = ctypes.cdll.LoadLibrary(lib_path)
 
 
 # Wiiuse external API functions.
@@ -426,14 +425,14 @@ class Wiimote(object):
         Return the number of Wiimotes successfully connected to. In this case,
         it will 1 or 0."""
         found = find(self.wiimotes, 1, 5)
-        log.debug('Found %s remote(s)', found)
+        logger.debug('Found %s remote(s)', found)
         if found:
             connected = connect(self.wiimotes, 1)
-            log.debug('Connected to %s remote(s)', connected)
+            logger.debug('Connected to %s remote(s)', connected)
             return connected
 
     def poll(self):
-        log.debug('Entering poll loop')
+        logger.debug('Entering poll loop')
         # Enable motion sensing
         motion_sensing(self.wiimote, 1)
         start_time = time.time()
@@ -442,7 +441,7 @@ class Wiimote(object):
         while True:
             # If the wiimote has timed out, disconnect.
             if time.time() > timeout:
-                log.debug('Wiimote connection timed out')
+                logger.debug('Wiimote connection timed out')
                 self.controller.wiimote_disconnected.emit()
             if not self.disconnected:
                 if poll(self.wiimotes, 1):
@@ -471,19 +470,19 @@ class Wiimote(object):
                                     status['buttons'].append(button)
                     elif (dev.event == WIIUSE_DISCONNECT or
                           dev.event == WIIUSE_UNEXPECTED_DISCONNECT):
-                        log.debug('Wiimote disconnected')
+                        logger.debug('Wiimote disconnected')
                         self.controller.wiimote_disconnected.emit()
                     self.controller.status_update.emit(status)
             else:
-                log.debug('Breaking from poll loop')
+                logger.debug('Breaking from poll loop')
                 # Disable motion sensing
                 motion_sensing(self.wiimote, 0)
                 break
 
     def set_leds(self, led_state):
-        log.debug('Setting LED state to {:04b}'.format(led_state >> 4))
+        logger.debug('Setting LED state to {:04b}'.format(led_state >> 4))
         set_leds(self.wiimote, led_state)
 
     def toggle_rumble(self):
-        log.debug('Toggling rumble')
+        logger.debug('Toggling rumble')
         toggle_rumble(self.wiimote)
