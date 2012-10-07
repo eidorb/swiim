@@ -4,6 +4,7 @@ import ctypes
 from ctypes import (c_char_p, c_int, c_ubyte, c_uint, c_uint16, c_float,
                     c_short, c_void_p, c_char, c_ushort,
                     CFUNCTYPE, Structure, POINTER, Union)
+import sys
 import time
 
 log = logging.getLogger('swiim.wiiuse')
@@ -239,24 +240,32 @@ class wiimote_state(Structure):
                 ('btns', c_ushort),
                 ('accel', vec3b)]
 
-# wiimote structure dependent on OS
-if os.name == 'nt':
-    JunkSkip = [('dev_handle', c_void_p),
-                ('hid_overlap', c_void_p*5), # skipping over this data structure
-                ('stack', c_int),
-                ('timeout', c_int),
-                ('normal_timeout', c_ubyte),
-                ('exp_timeout', c_ubyte)]
-else:
-    JunkSkip = [('bdaddr', c_void_p),
-                ('bdaddr_str', c_char*18),
-                ('out_sock', c_int),
-                ('in_sock', c_int)]
+# The wiimote structure is OS-dependent.
+if sys.platform.startswith('linux'):
+    os_dependent = [('bdaddr', c_void_p), # FIXME: c_void_p is not correct.
+                    ('out_sock', c_int),
+                    ('in_sock', c_int),
+                    ('bdaddr_str', c_char * 18)]
+elif sys.platform.startswith('win32'):
+    os_dependent = [('dev_handle', c_void_p),
+                    ('hid_overlap', c_void_p * 5),
+                    ('stack', c_int),
+                    ('timeout', c_int),
+                    ('normal_timeout', c_ubyte),
+                    ('exp_timeout', c_ubyte)]
+elif sys.platform.startswith('darwin'):
+    os_dependent = [('device', c_void_p),
+                    ('address', c_void_p),
+                    ('inputCh', c_void_p),
+                    ('outputCh', c_void_p),
+                    ('disconnectionRef', c_void_p),
+                    ('connectionHandler', c_void_p),
+                    ('bdaddr_str', c_char * 18)]
+
 
 class wiimote(Structure):
-    _fields_ = [('unid', c_int),
-               ] + JunkSkip + [
-                ('state', c_int),
+    _fields_ = [('unid', c_int),] + os_dependent + \
+               [('state', c_int),
                 ('leds', c_ubyte),
                 ('battery_level', c_float),
                 ('flags', c_int),
@@ -275,7 +284,8 @@ class wiimote(Structure):
                 ('accel_threshold', c_int),
                 ('lstate', wiimote_state),
                 ('event', c_int),
-                ('event_buf', c_ubyte * MAX_PAYLOAD)]
+                ('event_buf', c_ubyte * MAX_PAYLOAD),
+                ('motion_plus_id', c_ubyte * 6)]
 
 wiimote_p = POINTER(wiimote)
 wiimote_pp = POINTER(wiimote_p)
@@ -312,74 +322,79 @@ def using_speaker(wm):
 def is_led_set(dev, led):
     return dev.leds & led
 
-dll_dir = os.path.dirname(__file__)
-if os.name =='nt':
-    dll_path = os.path.join(dll_dir, 'wiiuse.dll')
-else:
-    dll_path = os.path.join(dll_dir, 'libwiiuse.so')
-log.info('Using wiiuse library "%s"', dll_path)
-dll = ctypes.cdll.LoadLibrary(dll_path)
+
+# Load the wiiuse library.
+LIB_DIR = os.path.dirname(__file__)
+if sys.platform.startswith('linux'):
+    lib_path = os.path.join(LIB_DIR, 'libwiiuse.so')
+elif sys.platform.startswith('win32'):
+    lib_path = os.path.join(LIB_DIR, 'wiiuse.dll')
+elif sys.platform.startswith('darwin'):
+    lib_path = os.path.join(LIB_DIR, 'libwiiuse.dylib')
+log.info('Using wiiuse library "%s"', lib_path)
+lib = ctypes.cdll.LoadLibrary(lib_path)
+
 
 # Wiiuse external API functions
 # wiiuse.c
-version = dll.wiiuse_version
+version = lib.wiiuse_version
 version.argtypes = ()
 version.restype = c_char_p
-init = dll.wiiuse_init
+init = lib.wiiuse_init
 init.argtypes = (c_int,)
 init.restype = wiimote_pp
-disconnected = dll.wiiuse_disconnected
+disconnected = lib.wiiuse_disconnected
 disconnected.argtypes = (wiimote_p,)
 disconnected.restype = None
-rumble = dll.wiiuse_rumble
+rumble = lib.wiiuse_rumble
 rumble.argtypes = (wiimote_p, c_int)
 rumble.restype = None
-toggle_rumble = dll.wiiuse_toggle_rumble
+toggle_rumble = lib.wiiuse_toggle_rumble
 toggle_rumble.argtypes = (wiimote_p,)
 toggle_rumble.restype = None
-set_leds = dll.wiiuse_set_leds
+set_leds = lib.wiiuse_set_leds
 set_leds.argtypes = (wiimote_p, c_int)
 set_leds.restype = None
-motion_sensing = dll.wiiuse_motion_sensing
+motion_sensing = lib.wiiuse_motion_sensing
 motion_sensing.argtypes = (wiimote_p, c_int)
 motion_sensing.restype = None
-status = dll.wiiuse_status
+status = lib.wiiuse_status
 status.argtypes = (wiimote_p,)
 status.restype = None
-set_flags = dll.wiiuse_set_flags
+set_flags = lib.wiiuse_set_flags
 set_flags.argtypes = (wiimote_p, c_int, c_int)
 set_flags.restype = c_int
-set_orient_threshold = dll.wiiuse_set_orient_threshold
+set_orient_threshold = lib.wiiuse_set_orient_threshold
 set_orient_threshold.argtypes = (wiimote_p, c_float)
 set_orient_threshold.restype = None
 
 # connect.c
-find = dll.wiiuse_find
+find = lib.wiiuse_find
 find.argtypes = (wiimote_pp, c_int, c_int)
 find.restype = c_int
-connect = dll.wiiuse_connect
+connect = lib.wiiuse_connect
 connect.argtypes = (wiimote_pp, c_int)
 connect.restype = c_int
-disconnect = dll.wiiuse_disconnect
+disconnect = lib.wiiuse_disconnect
 disconnect.argtypes = (wiimote_p,)
 disconnect.restype = None
 
 # events.c
-poll = dll.wiiuse_poll
+poll = lib.wiiuse_poll
 poll.argtypes = (wiimote_pp, c_int)
 poll.restype = c_int
 
 # ir.c
-set_ir = dll.wiiuse_set_ir
+set_ir = lib.wiiuse_set_ir
 set_ir.argtypes = (wiimote_p, c_int)
 set_ir.restype = None
-set_ir_vres = dll.wiiuse_set_ir_vres
+set_ir_vres = lib.wiiuse_set_ir_vres
 set_ir_vres.argtypes = (wiimote_p, c_uint, c_uint)
 set_ir_vres.restype = None
-set_ir_position = dll.wiiuse_set_ir_position
+set_ir_position = lib.wiiuse_set_ir_position
 set_ir_position.argtypes = (wiimote_p, c_int)
 set_ir_position.restype = None
-set_aspect_ratio = dll.wiiuse_set_aspect_ratio
+set_aspect_ratio = lib.wiiuse_set_aspect_ratio
 set_aspect_ratio.argtypes = (wiimote_p, c_int)
 set_aspect_ratio.restype = None
 
