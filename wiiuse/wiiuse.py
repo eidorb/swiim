@@ -1,15 +1,14 @@
+import ctypes
+from ctypes import (c_char, c_char_p, c_float, c_int, c_short, c_ubyte, c_uint,
+                    c_uint16, c_ushort, c_void_p, CFUNCTYPE, POINTER,
+                    Structure, Union)
 import logging
 import os
-import ctypes
-from ctypes import (c_char_p, c_int, c_ubyte, c_uint, c_uint16, c_float,
-                    c_short, c_void_p, c_char, c_ushort,
-                    CFUNCTYPE, Structure, POINTER, Union)
 import sys
 import time
 
-log = logging.getLogger('swiim.wiiuse')
 
-# Led bit masks
+# Led bit masks.
 WIIMOTE_LED_NONE = 0x00
 WIIMOTE_LED_1 = 0x10
 WIIMOTE_LED_2 = 0x20
@@ -21,8 +20,7 @@ leds = {
     'WIIMOTE_LED_3': WIIMOTE_LED_3,
     'WIIMOTE_LED_4': WIIMOTE_LED_4,
 }
-
-# Button codes
+# Button codes.
 WIIMOTE_BUTTON_TWO = 0x0001
 WIIMOTE_BUTTON_ONE = 0x0002
 WIIMOTE_BUTTON_B = 0x0004
@@ -53,13 +51,11 @@ buttons = {
     'WIIMOTE_BUTTON_UP': WIIMOTE_BUTTON_UP,
     'WIIMOTE_BUTTON_PLUS': WIIMOTE_BUTTON_PLUS,
 }
-
-# Nunchuk button codes
+# Nunchuk button codes.
 NUNCHUK_BUTTON_Z = 0x01
 NUNCHUK_BUTTON_C = 0x02
 NUNCHUK_BUTTON_ALL = 0x03
-
-# Classic controller button codes
+# Classic controller button codes.
 CLASSIC_CTRL_BUTTON_UP = 0x0001
 CLASSIC_CTRL_BUTTON_LEFT = 0x0002
 CLASSIC_CTRL_BUTTON_ZR = 0x0004
@@ -76,8 +72,7 @@ CLASSIC_CTRL_BUTTON_FULL_L = 0x2000
 CLASSIC_CTRL_BUTTON_DOWN = 0x4000
 CLASSIC_CTRL_BUTTON_RIGHT = 0x8000
 CLASSIC_CTRL_BUTTON_ALL = 0xFEFF
-
-# Guitar Hero 3 button codes
+# Guitar Hero 3 button codes.
 GUITAR_HERO_3_BUTTON_STRUM_UP = 0x0001
 GUITAR_HERO_3_BUTTON_YELLOW = 0x0008
 GUITAR_HERO_3_BUTTON_GREEN = 0x0010
@@ -88,23 +83,19 @@ GUITAR_HERO_3_BUTTON_PLUS = 0x0400
 GUITAR_HERO_3_BUTTON_MINUS = 0x1000
 GUITAR_HERO_3_BUTTON_STRUM_DOWN = 0x4000
 GUITAR_HERO_3_BUTTON_ALL = 0xFEFF
-
-# Wiimote option flags
+# Wiimote option flags.
 WIIUSE_SMOOTHING = 0x01
 WIIUSE_CONTINUOUS = 0x02
 WIIUSE_ORIENT_THRESH = 0x04
 WIIUSE_INIT_FLAGS = (WIIUSE_SMOOTHING | WIIUSE_ORIENT_THRESH)
-
-# Expansion codes
+# Expansion codes.
 EXP_NONE = 0
 EXP_NUNCHUK = 1
 EXP_CLASSIC = 2
 EXP_GUITAR_HERO_3 = 3
-
-# Largest payload is 21 bytes. Add 2 for prefix and round up to power of 2
+# Largest payload is 21 bytes. Add 2 for prefix and round up to power of 2.
 MAX_PAYLOAD = 32
-
-# Wiiuse events
+# Wiiuse events.
 WIIUSE_NONE = 0
 WIIUSE_EVENT = 1
 WIIUSE_STATUS = 2
@@ -119,20 +110,27 @@ WIIUSE_CLASSIC_CTRL_REMOVED = 10
 WIIUSE_GUITAR_HERO_3_CTRL_INSERTED = 11
 WIIUSE_GUITAR_HERO_3_CTRL_REMOVED = 12
 
-# Wiiuse data structures
+
+log = logging.getLogger(__name__)
+
+
+# Wiiuse data structures.
 class vec2b(Structure):
     _fields_ = [('x', c_ubyte),
                 ('y', c_ubyte)]
+
 
 class vec3b(Structure):
     _fields_ = [('x', c_ubyte),
                 ('y', c_ubyte),
                 ('z', c_ubyte)]
 
+
 class vec3f(Structure):
     _fields_ = [('x', c_float),
                 ('y', c_float),
                 ('z', c_float)]
+
 
 class orient(Structure):
     _fields_ = [('roll', c_float),
@@ -140,6 +138,7 @@ class orient(Structure):
                 ('yaw', c_float),
                 ('a_roll', c_float),
                 ('a_pitch', c_float)]
+
 
 class gforce(Structure):
     _fields_ = [('x', c_float),
@@ -154,6 +153,7 @@ class accel(Structure):
                 ('st_pitch', c_float),
                 ('st_alpha', c_float)]
 
+
 class ir_dot(Structure):
     _fields_ = [('visible', c_ubyte),
                 ('x', c_uint),
@@ -163,13 +163,14 @@ class ir_dot(Structure):
                 ('order', c_ubyte),
                 ('size', c_ubyte)]
 
+
 class ir(Structure):
-    _fields_ = [('dot', ir_dot*4),
+    _fields_ = [('dot', ir_dot * 4),
                 ('num_dots', c_ubyte),
                 ('aspect', c_int),
                 ('pos', c_int),
-                ('vres', c_uint*2),
-                ('offset', c_int*2),
+                ('vres', c_uint * 2),
+                ('offset', c_int * 2),
                 ('state', c_int),
                 ('ax', c_int),
                 ('ay', c_int),
@@ -178,12 +179,14 @@ class ir(Structure):
                 ('distance', c_float),
                 ('z', c_float)]
 
+
 class joystick(Structure):
     _fields_ = [('max', vec2b),
                 ('min', vec2b),
                 ('center', vec2b),
                 ('ang', c_float),
                 ('mag', c_float)]
+
 
 class nunchuk(Structure):
     _fields_ = [('accel_calib', accel),
@@ -198,6 +201,7 @@ class nunchuk(Structure):
                 ('orient', orient),
                 ('gforce', vec3f)]
 
+
 class classic_ctrl(Structure):
     _fields_ = [('btns', c_short),
                 ('btns_held', c_short),
@@ -207,6 +211,7 @@ class classic_ctrl(Structure):
                 ('ljs', joystick),
                 ('rjs', joystick)]
 
+
 class guitar_hero_3(Structure):
     _fields_ = [('btns', c_short),
                 ('btns_held', c_short),
@@ -214,14 +219,17 @@ class guitar_hero_3(Structure):
                 ('whammy_bar', c_float),
                 ('js', joystick)]
 
+
 class expansion_union(Union):
     _fields_ = [('nunchuk', nunchuk),
                 ('classic', classic_ctrl),
                 ('gh3', guitar_hero_3)]
 
+
 class expansion(Structure):
     _fields_ = [('type', c_int),
                 ('u', expansion_union)]
+
 
 class wiimote_state(Structure):
     _fields_ = [('exp_ljs_ang', c_float),
@@ -239,6 +247,7 @@ class wiimote_state(Structure):
                 ('orient', orient),
                 ('btns', c_ushort),
                 ('accel', vec3b)]
+
 
 # The wiimote structure is OS-dependent.
 if sys.platform.startswith('linux'):
@@ -287,37 +296,46 @@ class wiimote(Structure):
                 ('event_buf', c_ubyte * MAX_PAYLOAD),
                 ('motion_plus_id', c_ubyte * 6)]
 
+
 wiimote_p = POINTER(wiimote)
 wiimote_pp = POINTER(wiimote_p)
-
 event_cb_t = CFUNCTYPE(None, wiimote_p)
 read_cb_t = CFUNCTYPE(None, wiimote_p, POINTER(c_ubyte), c_uint16)
 ctrl_status_cb_t = CFUNCTYPE(None, wiimote_p, c_int, c_int, c_int, POINTER(c_int), c_float)
 dis_cb_t = CFUNCTYPE(None, wiimote_p)
 
+
 def is_pressed(dev, button):
     return dev.btns & button
+
 
 def is_held(dev, button):
     return dev.btns_held & button
 
+
 def is_released(dev, button):
     return dev.btns_released & button
+
 
 def is_just_pressed(dev, button):
     return is_pressed(dev, button) and not is_held(dev, button)
 
+
 def using_acc(wm):
     return wm.state & 0x020
+
 
 def using_exp(wm):
     return wm.state & 0x040
 
+
 def using_ir(wm):
     return wm.state & 0x080
 
+
 def using_speaker(wm):
     return wm.state & 0x100
+
 
 def is_led_set(dev, led):
     return dev.leds & led
@@ -335,7 +353,7 @@ log.info('Using wiiuse library "%s"', lib_path)
 lib = ctypes.cdll.LoadLibrary(lib_path)
 
 
-# Wiiuse external API functions
+# Wiiuse external API functions.
 # wiiuse.c
 version = lib.wiiuse_version
 version.argtypes = ()
@@ -367,7 +385,6 @@ set_flags.restype = c_int
 set_orient_threshold = lib.wiiuse_set_orient_threshold
 set_orient_threshold.argtypes = (wiimote_p, c_float)
 set_orient_threshold.restype = None
-
 # connect.c
 find = lib.wiiuse_find
 find.argtypes = (wiimote_pp, c_int, c_int)
@@ -378,12 +395,10 @@ connect.restype = c_int
 disconnect = lib.wiiuse_disconnect
 disconnect.argtypes = (wiimote_p,)
 disconnect.restype = None
-
 # events.c
 poll = lib.wiiuse_poll
 poll.argtypes = (wiimote_pp, c_int)
 poll.restype = c_int
-
 # ir.c
 set_ir = lib.wiiuse_set_ir
 set_ir.argtypes = (wiimote_p, c_int)
@@ -397,6 +412,7 @@ set_ir_position.restype = None
 set_aspect_ratio = lib.wiiuse_set_aspect_ratio
 set_aspect_ratio.argtypes = (wiimote_p, c_int)
 set_aspect_ratio.restype = None
+
 
 class Wiimote(object):
     def __init__(self, controller):
